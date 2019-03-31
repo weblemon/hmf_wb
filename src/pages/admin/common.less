@@ -1,0 +1,40 @@
+.admin-child-page {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    .breadcrumb {
+        padding: 10px;
+        background: #fff;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+
+    .content {
+        padding: 15px;
+        background: #fff;
+        flex: 1;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+        .top-bar {
+            margin-bottom: 10px;
+            .item {
+                margin-bottom: 5px;
+            }
+        }
+        .pager {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button{
+    -webkit-appearance: none !important;
+    margin: 0;
+}
+/*在firefox下移除input[number]的上下箭头*/
+input[type="number"]{-moz-appearance:textfield;}

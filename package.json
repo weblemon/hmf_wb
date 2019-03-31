@@ -3,19 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/http-proxy-middleware": "^0.19.2",
     "@types/jest": "24.0.11",
     "@types/node": "11.11.5",
     "@types/react": "16.8.8",
     "@types/react-dom": "16.8.3",
+    "@types/react-redux": "^7.0.5",
+    "@types/react-router-dom": "^4.3.1",
+    "antd": "^3.15.1",
+    "axios": "^0.18.0",
+    "date-diff": "^0.2.1",
+    "echarts": "^4.2.1",
+    "echarts-for-react": "^2.0.15-beta.0",
+    "less": "^3.9.0",
+    "less-loader": "^4.1.0",
+    "normalize.css": "^8.0.1",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-scripts": "2.1.8",
-    "typescript": "3.3.4000"
+    "react-redux": "^6.0.1",
+    "react-router-dom": "^5.0.0",
+    "redux": "^4.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -26,5 +38,12 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "babel-plugin-import": "^1.11.0",
+    "customize-cra": "^0.2.12",
+    "react-app-rewired": "^2.1.1",
+    "react-scripts": "2.1.8",
+    "typescript": "3.3.4000"
+  }
 }
