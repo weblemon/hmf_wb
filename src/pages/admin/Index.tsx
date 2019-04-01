@@ -5,7 +5,7 @@ import { UserState } from '../../store/reducers/user';
 import { Location, History } from 'history';
 import  {Route, Switch, Redirect, Link } from 'react-router-dom';
 import Welcome from './welcome';
-import { Layout, Menu, Icon, Dropdown, Button } from 'antd';
+import { Layout, Menu, Icon, Dropdown, Button, Modal, Form, Input, notification } from 'antd';
 import UserList from './user/UserList';
 import HouseList from './house/HouseList';
 import { SetAuthorizationAction, AdminActionTypes } from '../../store/reducers/user/action';
@@ -14,18 +14,27 @@ import PriceRule from './setting/PriceRule';
 import UserDetail from './user/UserDetail';
 import HouseDetail from './house/HouseDetail';
 import UserHouseList from './user/UserHouseList';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
+import http from '../../utils/http';
 
 interface Prop extends DispatchProp {
+    form: WrappedFormUtils;
     user: UserState; 
     location: Location;
     history: History;
     logOut: () => void;
 }
 
-type State = Readonly<{}>
+type State = Readonly<{
+    showChangePasswdModal: boolean;
+    changePasswdModalConfirmLoading: boolean;
+}>
 
 export class AdminIndex extends Component<Prop, State> {
-    readonly state: State = {}
+    readonly state: State = {
+        showChangePasswdModal: false,
+        changePasswdModalConfirmLoading: false
+    }
 
     componentWillMount() {
         if (!this.props.user.Authorization) {
@@ -34,6 +43,24 @@ export class AdminIndex extends Component<Prop, State> {
         if (this.props.location.pathname === '/admin') {
             this.props.history.replace('/admin/')
         }
+
+        /**
+         * 拦截响应内容
+         */
+        http.interceptors.response.use((response) => {
+            // 处理收到的响应结果
+            // response.data
+            if (response.data.code === '-1' && localStorage.getItem('authorization')) {
+                this.props.history.replace('/login.html')
+                this.props.logOut()
+                notification.error({
+                    message: '登录过期',
+                    description: '登录过期，请重新登录。'
+                })
+            }
+            return response
+        })
+
     }
 
     renderMenu(menu: HomeMenuItem[] | undefined) {
@@ -64,6 +91,8 @@ export class AdminIndex extends Component<Prop, State> {
     }
 
     render() {
+        const { showChangePasswdModal, changePasswdModalConfirmLoading } = this.state
+        const { getFieldDecorator } = this.props.form
         return (
             <Layout className='admin'>
                 <Layout.Header className='admin-header'>
@@ -74,7 +103,12 @@ export class AdminIndex extends Component<Prop, State> {
                     <div className="user">
                         <Dropdown overlay={
                             <Menu>
-                                <Menu.Item key="2"><Icon type="lock" />修改密码</Menu.Item>
+                                <Menu.Item 
+                                onClick={() => {
+                                    this.setState({
+                                        showChangePasswdModal: true
+                                    })
+                                }} key="2"><Icon type="lock" />修改密码</Menu.Item>
                                 <Menu.Divider />
                                 <Menu.Item onClick={() => { 
                                     this.props.logOut();
@@ -112,6 +146,108 @@ export class AdminIndex extends Component<Prop, State> {
                         </Switch>
                     </Layout.Content>
                 </Layout>
+                <Modal
+                    title="修改密码"
+                    visible={showChangePasswdModal}
+                    confirmLoading={changePasswdModalConfirmLoading}
+                    onCancel={() => {
+                        this.setState({
+                            showChangePasswdModal: false
+                        })
+                        this.props.form.resetFields()
+                    }}
+                    onOk={() => {
+                        this.props.form.validateFields((e, v) => {
+                            if (!e) {
+                                this.setState({
+                                    changePasswdModalConfirmLoading: true
+                                })
+                                http.post('/users/update', {
+                                    password: v.passowrd
+                                }).then((res) => {
+                                    const { success, message } = res.data
+                                    if (success) {
+                                        notification.success({
+                                            message: '提示',
+                                            description : '密码修改成功'
+                                        })
+                                    } else  {
+                                        notification.error({
+                                            message: '提示',
+                                            description : message
+                                        })
+                                    }
+                                    this.setState({
+                                        changePasswdModalConfirmLoading: false
+                                    })
+                                }).catch(e => {
+                                    notification.error({
+                                        message: '提示',
+                                        description : '修改失败，请重试。'
+                                    })
+                                })
+                            }
+                        })
+                    }}
+                >
+                    <Form ref="changepwd">
+                        <Form.Item>
+                            {
+                                getFieldDecorator('password', {
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '密码必须'
+                                        },
+                                        {
+                                            min: 6,
+                                            message: '密码不能小于6位'
+                                        },
+                                        {
+                                            max: 16,
+                                            message: '密码不能大于16位'
+                                        }
+                                    ]
+                                })(
+                                    <Input allowClear type="password" addonBefore="输入密码" />
+                                )
+                            }
+                        </Form.Item>
+                        <Form.Item>
+                            {
+                             getFieldDecorator('repassword', {
+                                rules: [
+                                    {
+                                        required: true,
+                                        message: '确认密码密码必须'
+                                    },
+                                    {
+                                        min: 6,
+                                        message: '密码不能小于6位'
+                                    },
+                                    {
+                                        max: 16,
+                                        message: '密码不能大于16位'
+                                    },
+                                    {
+                                        validator: (v, value, c) => {
+                                           const pwd = this.props.form.getFieldValue('password')
+                                           if (pwd === value) {
+                                                c()
+                                           } else {
+                                               c(v)
+                                           }
+                                            
+                                        },
+                                        message: '两次密码输入不一致'
+                                    }
+                                ]
+                            })(
+                                <Input allowClear type="password" addonBefore="确认密码" />
+                            )}
+                        </Form.Item>
+                    </Form>
+                </Modal>
             </Layout>
         )
     }
@@ -132,4 +268,4 @@ export default connect((state: { user: UserState }) => {
             localStorage.removeItem('authorization');
         }
     }
-})(AdminIndex);
+})(Form.create({name: 'changepwd'})(AdminIndex as any));

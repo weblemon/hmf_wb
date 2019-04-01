@@ -17,13 +17,14 @@ interface IProps  {
     history: History;
     setUser: (userInfo: UserInfo) => void;
     setAuthorization: (authorization: string) => void;
-
+    loading: boolean;
 }
 
 class LoginPage extends Component<IProps, any> {
 
     readonly state = {
         spinning: false,
+        loading: false,
         tms: Math.random()
     }
 
@@ -117,7 +118,7 @@ class LoginPage extends Component<IProps, any> {
                                         )
                                     }
                                     <Spin spinning={this.state.spinning}>
-                                        <img onClick={() => this.setState({spinning: true, tms: Math.random()})} onLoad={() => this.setState({spinning: false})} style={{height: 32}} src={'/proxyapi/util/validateCode?userName=admin&tms=' + this.state.tms} />
+                                        <img onClick={(e) => this.setState({spinning: true, tms: e.timeStamp})} onLoad={() => this.setState({spinning: false})} style={{height: 32}} src={'/proxyapi/util/validateCode?userName=admin&tms=' + this.state.tms} />
                                     </Spin>
                                 </div>
                             </Form.Item>
@@ -141,8 +142,10 @@ class LoginPage extends Component<IProps, any> {
     handleSubmit(e: FormEvent) {
         e.persist()
         e.preventDefault()
+        if (this.state.loading) return;
         this.props.form.validateFields((errors, value) => {
             if (!errors) {
+                this.state.loading = true;
                 http.post('/login', value).then(res => {
                     const { code, success, data, message } = res.data as BaseResponse<{ Authorization: string; userIfo: UserInfo }>
                     if (success) {
@@ -154,12 +157,20 @@ class LoginPage extends Component<IProps, any> {
                             message: '登陆失败',
                             description: message
                         })
+                        this.setState({
+                            tms: Math.random()
+                        })
                     }
+                    this.state.loading = false
                 }).catch(err => {
                     notification.error({
                         message: '错误',
                         description: '登陆失败，请重试。'
                     })
+                    this.setState({
+                        tms: Math.random()
+                    })
+                    this.state.loading = false
                 })
             }
         })
