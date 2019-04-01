@@ -270,7 +270,6 @@ class UserList extends Component<Prop, State> {
                             </Col>
                         </Row>
                     </div>
-                    <Table loading={this.state.loading} pagination={false} size="small" columns={columns as any} rowKey="id" dataSource={records}></Table>
                     <div className="pager">
                         <div></div>
                         <Pagination 
@@ -281,6 +280,31 @@ class UserList extends Component<Prop, State> {
                             }} 
                             size="small"
                             total={this.state.total}
+                            showTotal={t => `总共${t}条`}
+                            onShowSizeChange={(current, size) => {
+                                this.setState({current, size}, () => {
+                                    this.getUserList()
+                                })
+                            }}
+                            current={this.state.current}
+                            showSizeChanger
+                            showQuickJumper
+                            pageSizeOptions={['5', '10']}
+                        />
+                    </div>
+                    <Table bordered loading={this.state.loading} pagination={false} size="small" columns={columns as any} rowKey="id" dataSource={records}></Table>
+                    <div className="pager">
+                        <div></div>
+                        <Pagination 
+                            onChange={(current) => {
+                                this.setState({current}, () => {
+                                    this.getUserList()
+                                })
+                            }} 
+                            size="small"
+                            current={this.state.current}
+                            total={this.state.total}
+                            showTotal={t => `总共${t}条`}
                             onShowSizeChange={(current, size) => {
                                 this.setState({current, size}, () => {
                                     this.getUserList()

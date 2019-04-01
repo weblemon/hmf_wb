@@ -13,6 +13,7 @@ import homeMenu, { HomeMenuItem } from '../constants/homeMenu';
 import PriceRule from './setting/PriceRule';
 import UserDetail from './user/UserDetail';
 import HouseDetail from './house/HouseDetail';
+import UserHouseList from './user/UserHouseList';
 
 interface Prop extends DispatchProp {
     user: UserState; 
@@ -106,6 +107,7 @@ export class AdminIndex extends Component<Prop, State> {
                             <Route exact path={'/admin/user/:id.html'} component={UserDetail} />
                             <Route exact path={'/admin/house/list.html'} component={HouseList} />
                             <Route exact path={'/admin/house/:id.html'} component={HouseDetail} />
+                            <Route exact path={'/admin/user/:id/houses.html'} component={UserHouseList} />
                             <Route exact path={'/admin/setting/price-rule.html'} component={PriceRule} />
                         </Switch>
                     </Layout.Content>

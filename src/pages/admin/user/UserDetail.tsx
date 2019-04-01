@@ -207,27 +207,29 @@ class UserDetail extends Component<Prop, State> {
                     <Col span={8}>
                         <Card
                             title="统计"
-                            onClick={() => {
-                                if (publishNumber > 0)
-                                this.props.history.push(`/admin/house/list/${userInfo.id}.html`)
-                            }}
                         >
                             <Card.Grid>
-                                <Statistic valueStyle={ publishNumber >  0 ? {color: '#1890ff', cursor: "pointer"} : {}} title="正上架中房源" value={publishNumber} suffix="条" />
+                                <Link to={`/admin/user/${userInfo.id}/houses.html?avatarUrl=${userInfo.avatarUrl}&nickName=${userInfo.realName + (userInfo.gender === 1 ? "先生" : "女士")}&auditStatus=${0}`}>
+                                    <Statistic valueStyle={ publishNumber >  0 ? {color: '#1890ff', cursor: "pointer"} : {}} title="正上架中房源" value={publishNumber} suffix="条" />
+                                </Link>
                             </Card.Grid>
                             <Card.Grid>
-                                <Statistic title="用户下架房源" value={downNumber} suffix="条" />
+                                <Link to={`/admin/user/${userInfo.id}/houses.html?avatarUrl=${userInfo.avatarUrl}&nickName=${userInfo.realName + (userInfo.gender === 1 ? "先生" : "女士")}&auditStatus=${2}`}>
+                                    <Statistic valueStyle={ downNumber >  0 ? {color: '#1890ff', cursor: "pointer"} : {}} title="用户下架房源" value={downNumber} suffix="条" />
+                                </Link>
                             </Card.Grid>
                             <Card.Grid>
-                                <Statistic title="欠费下架房源" value={arrearNumber} suffix="条" />
+                                <Link to={`/admin/user/${userInfo.id}/houses.html?avatarUrl=${userInfo.avatarUrl}&nickName=${userInfo.realName + (userInfo.gender === 1 ? "先生" : "女士")}&auditStatus=${1}`}>
+                                    <Statistic valueStyle={ arrearNumber >  0 ? {color: '#1890ff', cursor: "pointer"} : {}} title="欠费下架房源" value={arrearNumber} suffix="条" />
+                                </Link>
                             </Card.Grid>
 
                             <Card.Grid>
-                                <Statistic title="收藏数量" value={collectionNumber} suffix="条" />
+                                <Statistic title="已收藏" value={collectionNumber} suffix="条" />
                             </Card.Grid>
 
                             <Card.Grid>
-                                <Statistic title="历史记录" value={browseNumber} suffix="条" />
+                                <Statistic title="已浏览" value={browseNumber} suffix="条" />
                             </Card.Grid>
                         </Card>
                     </Col>

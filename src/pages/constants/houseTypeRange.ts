@@ -45,17 +45,17 @@ const houseTypeEnum =  [
 /**
  * 根据range查询名称
  */
-export function getHousetTypeName(range: number[] | string) {
+export function getHousetTypeName(range: number[] | string, join: string = "") {
     if (!range) return;
     if (typeof range === 'string') {
         range = range.split(',').map(k => Number(k))
         return range.map((k, index) => {
             return houseTypeEnum[index][k]
-        }).join('')
+        }).join(join)
     } else {
         return range.map((k, index) => {
             return houseTypeEnum[index][k]
-        }).join('')
+        }).join(join)
     }
 }
 

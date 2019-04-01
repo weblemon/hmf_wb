@@ -1,7 +1,7 @@
 import React, { Component, CSSProperties } from 'react'
 import '../common.less'
 import './HouseDetail.less'
-import { Breadcrumb, Row, Col, Card, Statistic, Carousel, Button, Avatar, Input, Radio, Select, notification } from 'antd';
+import { Breadcrumb, Row, Col, Card, Statistic, Carousel, Button, Avatar, Input, Radio, Select, notification, Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 import { match } from 'react-router';
 import { Location, History } from 'history';
@@ -40,11 +40,16 @@ class HouseDetail extends Component<Prop, State> {
                 <Row gutter={14}>
                     <Col span={14}>
                         <Card
-                            title={houseInfo.houseTitle}
+                            title={
+                                <h3>{houseInfo.houseTitle}<small style={{marginLeft: 10}}>编号：{houseInfo.id}</small></h3>
+                            }
                             extra={
-                                <Link to={`/admin/user/${houseInfo.user.id}.html`}>
-                                    <Avatar src={houseInfo.user.avatarUrl} />
-                                </Link>
+                                <Tooltip placement="rightTop" title={'查看用户详情'}>
+                                    <Link to={`/admin/user/${houseInfo.user.id}.html`}>
+                                        <Avatar src={houseInfo.user.avatarUrl} />
+                                    </Link>
+                                </Tooltip>
+                                
                             }
                         >
 
