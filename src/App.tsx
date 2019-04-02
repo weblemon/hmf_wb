@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 
 import './App.less';
 import AdminIndex from './pages/admin/Index';
+import NotFound from './pages/NotFound';
 
 class App extends Component {
     public render() {
@@ -18,6 +19,8 @@ class App extends Component {
                         <Redirect exact path={'/'} to={'/admin/'} />
                         <Route exact path={'/login.html'} component={LoginPage} />
                         <Route path={'/admin/'} component={AdminIndex} />
+                        <Route path={'/404.html'} component={NotFound} />
+                        <Redirect to={'/404.html'} />
                     </Switch>
                 </div>
             </BrowserRouter>

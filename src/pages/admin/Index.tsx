@@ -16,6 +16,8 @@ import HouseDetail from './house/HouseDetail';
 import UserHouseList from './user/UserHouseList';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import http from '../../utils/http';
+import UserCashFlow from './user/UserCashFlow';
+import NotFound from './NotFound';
 
 interface Prop extends DispatchProp {
     form: WrappedFormUtils;
@@ -142,7 +144,10 @@ export class AdminIndex extends Component<Prop, State> {
                             <Route exact path={'/admin/house/list.html'} component={HouseList} />
                             <Route exact path={'/admin/house/:id.html'} component={HouseDetail} />
                             <Route exact path={'/admin/user/:id/houses.html'} component={UserHouseList} />
+                            <Route exact path={'/admin/user/:id/cashflow.html'} component={UserCashFlow} />
                             <Route exact path={'/admin/setting/price-rule.html'} component={PriceRule} />
+                            <Route exact path={'/admin/404.html'} component={NotFound}></Route>
+                            <Redirect to={'/admin/404.html'}></Redirect>
                         </Switch>
                     </Layout.Content>
                 </Layout>
@@ -163,10 +168,19 @@ export class AdminIndex extends Component<Prop, State> {
                                     changePasswdModalConfirmLoading: true
                                 })
                                 http.post('/users/update', {
-                                    password: v.passowrd
+                                    password: v.password
                                 }).then((res) => {
                                     const { success, message } = res.data
                                     if (success) {
+                                        Modal.info({
+                                            title: '密码已修改',
+                                            content: '修改密码后需要重新登录！',
+                                            onOk: () => {
+                                                this.props.logOut()
+                                                this.props.history.replace('/login.html')
+                                            }
+                                        })
+                                        
                                         notification.success({
                                             message: '提示',
                                             description : '密码修改成功'
@@ -206,6 +220,22 @@ export class AdminIndex extends Component<Prop, State> {
                                         {
                                             max: 16,
                                             message: '密码不能大于16位'
+                                        },
+                                        {
+                                            validator: (v, value, c) => {
+                                                const pwd = this.props.form.getFieldValue('repassword')
+                                                const repasswordError = this.props.form.getFieldError('repassword')
+                                                if (pwd === value) {
+                                                    if (repasswordError) {
+                                                            this.props.form.validateFields(['repassword'])
+                                                    }
+                                                    c()
+                                                } else {
+                                                    c(true)
+                                                }
+                                                
+                                            },
+                                            message: '两次密码输入不一致'
                                         }
                                     ]
                                 })(
@@ -232,10 +262,14 @@ export class AdminIndex extends Component<Prop, State> {
                                     {
                                         validator: (v, value, c) => {
                                            const pwd = this.props.form.getFieldValue('password')
+                                           const repasswordError = this.props.form.getFieldError('password')
                                            if (pwd === value) {
+                                               if (repasswordError) {
+                                                    this.props.form.validateFields(['password'])
+                                               }
                                                 c()
                                            } else {
-                                               c(v)
+                                               c(true)
                                            }
                                             
                                         },

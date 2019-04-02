@@ -65,10 +65,7 @@ class UserDetail extends Component<Prop, State> {
                             </Card.Grid>
 
                             <Card.Grid style={gridStyle}>
-                                <Card.Meta
-                                    title="账户余额"
-                                    description={userInfo.balance || 0}
-                                />
+                                <Statistic title="账户余额" value={userInfo.balance || 0} suffix="元" />
                             </Card.Grid>
 
                             <Card.Grid style={gridStyle}>
@@ -99,6 +96,7 @@ class UserDetail extends Component<Prop, State> {
                                                 })
                                             }}
                                             defaultValue={userInfo.type}
+                                            value={userInfo.type}
                                         >
                                             <RadioButton value={1}>房东</RadioButton>
                                             <RadioButton value={2}>中介</RadioButton>
@@ -117,6 +115,7 @@ class UserDetail extends Component<Prop, State> {
                                                     gender: e.target.value
                                                 })
                                             }}
+                                            value={userInfo.gender}
                                             defaultValue={userInfo.gender}
                                         >
                                             <RadioButton value={1}>男</RadioButton>
@@ -199,6 +198,15 @@ class UserDetail extends Component<Prop, State> {
                                             }}
                                             // defaultValue={userInfo.sparePhone}
                                         />
+                                    }
+                                />
+                            </Card.Grid>
+
+                            <Card.Grid style={gridStyle}>
+                                <Card.Meta
+                                    title="账目流水"
+                                    description={
+                                        <Link to={`/admin/user/${userInfo.id}/cashflow.html?avatarUrl=${userInfo.avatarUrl}&nickName=${userInfo.realName + (userInfo.gender === 1 ? "先生" : "女士")}&auditStatus=${0}`}>查看流水</Link>
                                     }
                                 />
                             </Card.Grid>
@@ -403,8 +411,8 @@ class UserDetail extends Component<Prop, State> {
                 })
                 this.setState({
                     publishNumber: result[0],
-                    downNumber: result[1],
-                    arrearNumber: result[2],
+                    arrearNumber: result[1],
+                    downNumber: result[2],
                     collectionNumber: result[3],
                     browseNumber: result[4]
                 })

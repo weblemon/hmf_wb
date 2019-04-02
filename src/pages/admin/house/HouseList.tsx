@@ -3,20 +3,16 @@ import React, { Component, CSSProperties } from 'react'
 import { Breadcrumb, Table, notification, Avatar, Switch, Button, DatePicker, Pagination, Row, Col, Modal, Input, Radio, Select, Cascader, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 import http, { BaseResponse } from '../../../utils/http';
-import Search from 'antd/lib/input/Search';
 import { ColumnProps } from 'antd/lib/table';
-import { formatHouseType, formatHouseTime, formatHouseOrientation, formatHouseFloor, formatHouseDoorLookType, formatHouseDecoration } from '../../../utils/format';
+import { formatHouseType, formatHouseTime } from '../../../utils/format';
 import { Location, History } from 'history';
-import houseStatus, { getHouseStatusTypeId, getHouseStatusTypeName } from '../../constants/houseStatus';
-import RadioGroup from 'antd/lib/radio/group';
-import RadioButton from 'antd/lib/radio/radioButton';
+import houseStatus, { getHouseStatusTypeId } from '../../constants/houseStatus';
 import houseOrientation, { getHouseOrientationTypeId, getHouseOrientationTypeName } from '../../constants/houseOrientation';
 import houseDoorLookTypeRange, { getHouseDoorLookTypeId, getHouseDoorLookTypeName } from '../../constants/houseDoorLookTypeRange';
 import houseDecorationRange, { getHouseDecorationTypeId, getHouseDecorationTypeName } from '../../constants/houseDecorationRange';
-import houseFloor, { getCountFloorRange, getFloorRange, getHouseFloorTypeName } from '../../constants/houseFloor';
-import houseTypeEnum, { getHousetTypeName } from '../../constants/houseTypeRange';
+import { getHouseFloorTypeName } from '../../constants/houseFloor';
+import houseTypeEnum from '../../constants/houseTypeRange';
 import houseingTypeRange, { getHouseingTypeId } from '../../constants/houseingTypeRange';
-import houstTypeRange from '../../../utils/houstTypeRange';
 
 type Prop = {
     location: Location;
@@ -32,6 +28,7 @@ type State = Readonly<{
     records: Record[];
     editLoading: number | null;
     query: SearchQuery;
+    houseType: number;
 }>
 
 class HouseList extends Component<Prop, State> {
@@ -44,6 +41,7 @@ class HouseList extends Component<Prop, State> {
         current: 1,
         loading: false,
         editLoading: null,
+        houseType: 0,
         query: {}
     }
 
@@ -83,7 +81,7 @@ class HouseList extends Component<Prop, State> {
             },
             {
                 title: '已上架',
-                width: 200,
+                width: 100,
                 align: 'center',
                 render: (record: Record) => {
                     return (
@@ -127,7 +125,7 @@ class HouseList extends Component<Prop, State> {
             },
             {
                 title: '操作',
-                width: 200,
+                width: 100,
                 align: 'center',
                 render: (record: Record) => {
                     return <Button onClick={() => { this.props.history.push(`/admin/house/${record.id}.html`) }} size="small" type="ghost">查看</Button>
@@ -325,6 +323,9 @@ class HouseList extends Component<Prop, State> {
                                         this.changeSearchQuery({
                                             houseType: e.join(",")
                                         })
+                                        this.setState({
+                                            houseType: 0
+                                        })
                                     }}
                                     style={{
                                         width: 240
@@ -490,36 +491,57 @@ class HouseList extends Component<Prop, State> {
                                 </Select>
                             </Col>
                             <Col span={col}>
-                                <Button
-                                    onClick={() => {
+                                <Select
+                                     style={{
+                                        width: 240
+                                    }}
+                                    value={this.state.houseType}
+                                    onChange={(e) => {
                                         this.setState({
-                                            query: {}
-                                        }, () => {
-                                            this.getHouseList()
+                                            houseType: e
+                                        })
+                                        this.changeSearchQuery({
+                                            houseType: ""
                                         })
                                     }}
-                                    style={{
-                                        marginRight: 20
-                                    }}
-                                    type="default"
                                 >
-                                    清空
-                                </Button>
-                                
-                                <Button
-                                    type="primary" 
-                                    onClick={() => {
-                                        this.getHouseList()
-                                    }}
-                                >
-                                    搜索
-                                </Button>
+                                    {
+                                        ['户型(模糊查询)不限', '一居室', '二居室', '三居室', '四居室', '五居室', '五居以上'].map((item, index) => {
+                                            return <Select.Option key={index} value={index}>{item}</Select.Option>
+                                        })
+                                    }
+                                </Select>
                             </Col>
                         </Row>
                     </div>
                     <div className="pager">
-                        {/* <Button type="primary">批量下架</Button> */}
-                        <div></div>
+                        <div>
+                            <Button
+                                onClick={() => {
+                                    this.setState({
+                                        query: {},
+                                        houseType: 0
+                                    }, () => {
+                                        this.getHouseList()
+                                    })
+                                }}
+                                style={{
+                                    marginRight: 20
+                                }}
+                                type="default"
+                            >
+                                清空
+                            </Button>
+                            
+                            <Button
+                                type="primary" 
+                                onClick={() => {
+                                    this.getHouseList()
+                                }}
+                            >
+                                搜索
+                            </Button>
+                        </div>
                         <Pagination 
                             onChange={(current) => {
                                 this.setState({current}, () => {
@@ -633,9 +655,20 @@ class HouseList extends Component<Prop, State> {
     }
 
     public getHouseList() {
-        const { current, loading, size, query } = this.state
+        let { current, loading, size, query } = this.state
         if (loading) return;
         this.setState({loading: true})
+        const { houseType } = this.state
+        query = JSON.parse(JSON.stringify(query))
+        // 户型区间
+        if (houseType) {
+            query.houseType = String(houseType - 1)
+            query.hType = 0
+            if (houseType === 6) {
+                query.houseType = String(4)
+                query.hType = 2
+            }
+        }
         http.get('/housingResources/queryPageHouses', {
             params: { 
                 current,

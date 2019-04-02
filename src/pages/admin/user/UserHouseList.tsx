@@ -3,20 +3,15 @@ import React, { Component, CSSProperties } from 'react'
 import { Breadcrumb, Table, notification, Avatar, Switch, Button, DatePicker, Pagination, Row, Col, Modal, Input, Radio, Select, Cascader, Icon, Card } from 'antd';
 import { Link } from 'react-router-dom';
 import http, { BaseResponse } from '../../../utils/http';
-import Search from 'antd/lib/input/Search';
 import { ColumnProps } from 'antd/lib/table';
-import { formatHouseType, formatHouseTime, formatHouseOrientation, formatHouseFloor, formatHouseDoorLookType, formatHouseDecoration } from '../../../utils/format';
+import { formatHouseType, formatHouseTime } from '../../../utils/format';
 import { Location, History } from 'history';
-import houseStatus, { getHouseStatusTypeId, getHouseStatusTypeName } from '../../constants/houseStatus';
-import RadioGroup from 'antd/lib/radio/group';
-import RadioButton from 'antd/lib/radio/radioButton';
 import houseOrientation, { getHouseOrientationTypeId, getHouseOrientationTypeName } from '../../constants/houseOrientation';
 import houseDoorLookTypeRange, { getHouseDoorLookTypeId, getHouseDoorLookTypeName } from '../../constants/houseDoorLookTypeRange';
 import houseDecorationRange, { getHouseDecorationTypeId, getHouseDecorationTypeName } from '../../constants/houseDecorationRange';
-import houseFloor, { getCountFloorRange, getFloorRange, getHouseFloorTypeName } from '../../constants/houseFloor';
-import houseTypeEnum, { getHousetTypeName } from '../../constants/houseTypeRange';
+import {getHouseFloorTypeName } from '../../constants/houseFloor';
+import houseTypeEnum from '../../constants/houseTypeRange';
 import houseingTypeRange, { getHouseingTypeId } from '../../constants/houseingTypeRange';
-import houstTypeRange from '../../../utils/houstTypeRange';
 import Meta from 'antd/lib/card/Meta';
 import { match } from 'react-router';
 import Qs from 'qs'
@@ -170,8 +165,8 @@ class UserHouseList extends Component<Prop, State> {
                 <Card>
                     <Meta
                         avatar={<Avatar src={avatarUrl} />}
-                        title={<p>ID: {id}</p>}
-                        description={nickName}
+                        title={nickName}
+                        description={'房源列表'}
                     />
                 </Card>
                 <div className="content">

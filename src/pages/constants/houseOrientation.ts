@@ -8,8 +8,6 @@ enum HouseOrientationEnum {
     "西",
     "南",
     "北",
-    "南北",
-    "东西",
     "东南",
     "西南",
     "东北",
@@ -42,26 +40,18 @@ const houseOrientationEnum: HouseOrientations = [
     },
     {
         id: 4,
-        name: HouseOrientationEnum[4]
-    },
-    {
-        id: 5,
-        name: HouseOrientationEnum[5]
-    },
-    {
-        id: 6,
         name: HouseOrientationEnum[6]
     },
     {
-        id: 7,
+        id: 5,
         name: HouseOrientationEnum[7]
     },
     {
-        id: 8,
+        id: 6,
         name: HouseOrientationEnum[8]
     },
     {
-        id: 9,
+        id: 7,
         name: HouseOrientationEnum[9]
     },
 ]

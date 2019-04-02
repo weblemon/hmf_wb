@@ -312,7 +312,8 @@ class HouseDetail extends Component<Prop, State> {
                 
                 <div className="content" style={{
                     background: '#f1f1f1',
-                    padding: 0
+                    padding: 0,
+                    overflow: 'hidden'
                 }}>
                     <div className="house-info">
                         {this.renderInfo()}
