@@ -7,7 +7,7 @@ import { Location, History } from 'history';
 import Qs from 'qs'
 import http from '../../../utils/http';
 import { ColumnProps } from 'antd/lib/table';
-import { formatHouseTime } from '../../../utils/format';
+import { formatHouseTime, formatTime } from '../../../utils/format';
 
 type Prop = {
     location: Location;
@@ -56,7 +56,7 @@ class UserCashFlow extends PureComponent<Prop, State> {
                 title: '充值时间',
                 align: 'center',
                 dataIndex: 'rawAddTime',
-                render: (rawAddTime) =>  formatHouseTime(rawAddTime)
+                render: (rawAddTime) => formatTime(rawAddTime)
             }
         ]
         return (
@@ -116,6 +116,7 @@ class UserCashFlow extends PureComponent<Prop, State> {
                         size="small"
                         columns={columns}
                         bordered
+                        rowKey="id"
                         dataSource={records}>
                     </Table>
                     <div className="pager" style={{background:'#fff'}}>

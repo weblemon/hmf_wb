@@ -25,7 +25,7 @@ class LoginPage extends Component<IProps, any> {
     readonly state = {
         spinning: false,
         loading: false,
-        tms: Math.random()
+        tms: new Date().getTime()
     }
 
     render() {
@@ -53,7 +53,7 @@ class LoginPage extends Component<IProps, any> {
                                                 required: true, message: '请输入账号!',
                                             },
                                             {
-                                                max: 16,
+                                                max: 30,
                                                 min: 3,
                                                 message: '账号长度不正确'
                                             }
@@ -76,7 +76,7 @@ class LoginPage extends Component<IProps, any> {
                                                 required: true, message: '请输入密码!',
                                             },
                                             {
-                                                max: 16,
+                                                max: 30,
                                                 min: 5,
                                                 message: '密码长度不正确'
                                             }
@@ -118,7 +118,7 @@ class LoginPage extends Component<IProps, any> {
                                         )
                                     }
                                     <Spin spinning={this.state.spinning}>
-                                        <img onClick={(e) => this.setState({spinning: true, tms: e.timeStamp})} onLoad={() => this.setState({spinning: false})} style={{height: 32}} src={'/proxyapi/util/validateCode?userName=admin&tms=' + this.state.tms} />
+                                        <img onClick={(e) => this.setState({spinning: true, tms: e.timeStamp})} onLoad={() => this.setState({spinning: false})} style={{height: 32}} src={'/proxyapi/util/validateCode?userName=HousingManagement&tms=' + this.state.tms} />
                                     </Spin>
                                 </div>
                             </Form.Item>

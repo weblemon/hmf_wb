@@ -42,8 +42,8 @@ export class AdminIndex extends Component<Prop, State> {
         if (!this.props.user.Authorization) {
             return this.props.history.replace('/login.html')
         }
-        if (this.props.location.pathname === '/admin') {
-            this.props.history.replace('/admin/')
+        if (this.props.location.pathname === '/admin/') {
+            this.props.history.replace('/admin/welcome.html')
         }
 
         /**
@@ -137,7 +137,7 @@ export class AdminIndex extends Component<Prop, State> {
                     </Layout.Sider>
                     <Layout.Content className={'admin-content'}>
                         <Switch>
-                            <Redirect exact path={'/admin/'} to={'/admin/welcome.html'} />
+                            <Route exact path={'/admin/'} component={Welcome} />
                             <Route exact path={'/admin/welcome.html'} component={Welcome} />
                             <Route exact path={'/admin/user/list.html'} component={UserList} />
                             <Route exact path={'/admin/user/:id.html'} component={UserDetail} />
@@ -147,7 +147,7 @@ export class AdminIndex extends Component<Prop, State> {
                             <Route exact path={'/admin/user/:id/cashflow.html'} component={UserCashFlow} />
                             <Route exact path={'/admin/setting/price-rule.html'} component={PriceRule} />
                             <Route exact path={'/admin/404.html'} component={NotFound}></Route>
-                            <Redirect to={'/admin/404.html'}></Redirect>
+                            <Redirect to={'/404.html'}></Redirect>
                         </Switch>
                     </Layout.Content>
                 </Layout>

@@ -15,6 +15,7 @@ import houseingTypeRange, { getHouseingTypeId } from '../../constants/houseingTy
 import Meta from 'antd/lib/card/Meta';
 import { match } from 'react-router';
 import Qs from 'qs'
+import { RangePickerValue } from 'antd/lib/date-picker/interface';
 
 type Prop = {
     location: Location;
@@ -35,6 +36,7 @@ type State = Readonly<{
     avatarUrl?: string;
     nickName?: string;
     auditStatus?: string | number;
+    timeRange?: RangePickerValue;
 }>
 
 class UserHouseList extends Component<Prop, State> {
@@ -177,6 +179,7 @@ class UserHouseList extends Component<Prop, State> {
                                     allowClear
                                     placeholder="搜索地区/小区名"
                                     style={{ width: 240 }}
+                                    value={query.search}
                                     onInput={(e) => {
                                         this.changeSearchQuery({
                                             search: (e.target as HTMLInputElement).value
@@ -195,6 +198,7 @@ class UserHouseList extends Component<Prop, State> {
                                     style={{
                                         width: 240
                                     }}
+                                    value={this.state.timeRange}
                                     onChange={(e, d) => {
                                             const startAddTime = d[0]
                                             const endAddTime = d[1]
@@ -205,6 +209,9 @@ class UserHouseList extends Component<Prop, State> {
                                                 this.changeSearchQuery({
                                                     startAddTime,
                                                     endAddTime
+                                                })
+                                                this.setState({
+                                                    timeRange: e
                                                 })
                                             }
                                         }
@@ -218,6 +225,7 @@ class UserHouseList extends Component<Prop, State> {
                                         placeholder="开始面积"
                                         allowClear
                                         style={{ width: 100 }}
+                                        value={query.startHouseArea}
                                         onInput={(e) => {
                                             let v = Number((e.target as HTMLInputElement).value)
                                             if (v < 0) v = 0;
@@ -238,6 +246,7 @@ class UserHouseList extends Component<Prop, State> {
                                         type="number"
                                         placeholder="结束面积"
                                         allowClear
+                                        value={query.endHouseArea}
                                         style={{ width: 100 }}
                                         onInput={(e) => {
                                             let v = Number((e.target as HTMLInputElement).value)
@@ -459,38 +468,40 @@ class UserHouseList extends Component<Prop, State> {
                                     }
                                 </Select>
                             </Col>
-                            
-                            <Col span={col}>
-                                <Button
-                                    onClick={() => {
-                                        this.setState({
-                                            query: {}
-                                        }, () => {
-                                            this.getHouseList()
-                                        })
-                                    }}
-                                    style={{
-                                        marginRight: 20
-                                    }}
-                                    type="default"
-                                >
-                                    清空
-                                </Button>
-                                
-                                <Button
-                                    type="primary" 
-                                    onClick={() => {
-                                        this.getHouseList()
-                                    }}
-                                >
-                                    搜索
-                                </Button>
-                            </Col>
                         </Row>
                     </div>
                     <div className="pager">
-                        {/* <Button type="primary">批量下架</Button> */}
-                        <div></div>
+                        <div>
+                             <Button
+                                onClick={() => {
+                                    this.setState({
+                                        query: {},
+                                        timeRange: []
+                                    }, () => {
+                                        this.getHouseList()
+                                    })
+                                }}
+                                style={{
+                                    marginRight: 20
+                                }}
+                                type="default"
+                            >
+                                清空
+                            </Button>
+                            
+                            <Button
+                                type="primary" 
+                                onClick={() => {
+                                    this.setState({
+                                        current: 1
+                                    }, () => {
+                                        this.getHouseList()
+                                    })
+                                }}
+                            >
+                                搜索
+                            </Button>
+                        </div>
                         <Pagination 
                             onChange={(current) => {
                                 this.setState({current}, () => {
@@ -506,6 +517,7 @@ class UserHouseList extends Component<Prop, State> {
                                     this.getHouseList()
                                 })
                             }}
+                            pageSize={this.state.size}
                             showSizeChanger
                             showQuickJumper
                             pageSizeOptions={['5', '10']}
@@ -567,7 +579,6 @@ class UserHouseList extends Component<Prop, State> {
                         }}
                     />
                     <div className="pager">
-                        {/* <Button type="primary">批量下架</Button> */}
                         <div></div>
                         <Pagination 
                             onChange={(current) => {
@@ -584,6 +595,7 @@ class UserHouseList extends Component<Prop, State> {
                                     this.getHouseList()
                                 })
                             }}
+                            pageSize={this.state.size}
                             showSizeChanger
                             showQuickJumper
                             pageSizeOptions={['5', '10']}

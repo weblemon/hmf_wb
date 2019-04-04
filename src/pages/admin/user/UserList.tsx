@@ -7,6 +7,7 @@ import http, { BaseResponse } from '../../../utils/http';
 import { ColumnProps } from 'antd/lib/table';
 import { Location, History } from 'history';
 import Search from 'antd/lib/input/Search';
+import { formatTime } from '../../../utils/format';
 
 type Prop = {
     location: Location;
@@ -103,7 +104,7 @@ class UserList extends Component<Prop, State> {
                 align: 'center',
                 dataIndex: 'rawAddTime',
                 render: (rawAddTime: string) => {
-                    return new Date(rawAddTime).toLocaleString()
+                    return formatTime(rawAddTime)
                 }
             },
             {
@@ -112,13 +113,22 @@ class UserList extends Component<Prop, State> {
                 dataIndex: 'rawUpdateTime',
                 render: (rawUpdateTime: string) => {
                     if (!rawUpdateTime) return '';
-                    return new Date(rawUpdateTime).toLocaleString()
+                    return formatTime(rawUpdateTime)
+                }
+            },
+            {
+                title: '余额',
+                align: 'center',
+                dataIndex: 'balance',
+                render: (balance: number) => {
+                    return (balance || 0) + '元'
                 }
             },
             {
                 title: '状态',
                 align: 'center',
                 render: (record: Record) => {
+                    record.balance
                     return <Switch
                         checked={record.state === 0}
                         loading={this.state.changeStateLoading === record.id}
@@ -288,6 +298,7 @@ class UserList extends Component<Prop, State> {
                             }}
                             current={this.state.current}
                             showSizeChanger
+                            pageSize={this.state.size}
                             showQuickJumper
                             pageSizeOptions={['5', '10']}
                         />
@@ -312,6 +323,7 @@ class UserList extends Component<Prop, State> {
                             }}
                             showSizeChanger
                             showQuickJumper
+                            pageSize={this.state.size}
                             pageSizeOptions={['5', '10']}
                         />
                     </div>
@@ -325,9 +337,10 @@ class UserList extends Component<Prop, State> {
         this.setState({
             loading: true
         })
-        const { size, search, gender, type } = this.state
+        const { size, search, gender, type, current } = this.state
         const params: any = {
             order: 'asc',
+            current,
             size
         }
         if (search) {
@@ -404,6 +417,7 @@ export interface Record {
   language?: string;
   province?: string;
   isNeedCheck: number;
+  balance: number;
   code?: any;
   sms?: any;
 }

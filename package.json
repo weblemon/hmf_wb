@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/polyfill": "^7.4.3",
     "@types/http-proxy-middleware": "^0.19.2",
     "@types/jest": "24.0.11",
     "@types/node": "11.11.5",
@@ -13,6 +14,7 @@
     "@types/react-router-dom": "^4.3.1",
     "antd": "^3.15.1",
     "axios": "^0.18.0",
+    "babel-polyfill": "^6.26.0",
     "date-diff": "^0.2.1",
     "echarts": "^4.2.1",
     "echarts-for-react": "^2.0.15-beta.0",

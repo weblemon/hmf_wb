@@ -15,6 +15,7 @@ import { getHousetTypeName } from '../../constants/houseTypeRange';
 import { getHouseingTypeName } from '../../constants/houseingTypeRange';
 import statusRange, { getHouseStatusTypeName, getHouseStatusTypeId } from '../../constants/houseStatus';
 import RadioButton from 'antd/lib/radio/radioButton';
+import { formatTime } from '../../../utils/format';
 
 type Prop = {
     history: History;
@@ -163,7 +164,7 @@ class HouseDetail extends Component<Prop, State> {
                             >
                                 <Card.Meta
                                     title="发布时间"
-                                    description={new Date(houseInfo.rawAddTime).toLocaleDateString()}
+                                    description={formatTime(houseInfo.rawAddTime)}
                                 />
                             </Card.Grid>
 
@@ -172,7 +173,7 @@ class HouseDetail extends Component<Prop, State> {
                             >
                                 <Card.Meta
                                     title="更新时间"
-                                    description={houseInfo.rawUpdateTime ? new Date(houseInfo.rawUpdateTime).toLocaleDateString() : '暂无更新'}
+                                    description={houseInfo.rawUpdateTime ? formatTime(houseInfo.rawUpdateTime) : '暂无更新'}
                                 />
                             </Card.Grid>
 

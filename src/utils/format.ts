@@ -18,11 +18,11 @@ export function formatHouseTime(time: string) {
     const now = new Date();
     const d = new Date(time.substring(0, 16).replace('T', ' ').replace(/\-/g, '/'))
     let date: any = d.getDate()
-    let m: any = d.getMonth()
+    let m: any = d.getMonth() + 1
     let mm: any = d.getMinutes()
     let hh: any = d.getHours()
     
-    if (date < 10) date += `0${date}`;
+    if (date < 10) date= `0${date}`;
     if (m < 10) m = `0${m}`;
     if (mm < 10) mm = `0${mm}`;
     if (hh < 10) hh = `0${hh}`
@@ -49,6 +49,25 @@ export function formatHouseTime(time: string) {
       return `前天 ${hh}:${mm}`
     }
 
+    return `${d.getFullYear()}-${m}-${date} ${hh}:${mm}`
+}
+
+
+/**
+ * 格式化时间
+ */
+export function formatTime(time: string) {
+    if (!time) return;
+    const d = new Date(time.substring(0, 16).replace('T', ' ').replace(/\-/g, '/'))
+    let date: any = d.getDate()
+    let m: any = d.getMonth() + 1
+    let mm: any = d.getMinutes()
+    let hh: any = d.getHours()
+    
+    if (date < 10) date = `0${date}`;
+    if (m < 10) m = `0${m}`;
+    if (mm < 10) mm = `0${mm}`;
+    if (hh < 10) hh = `0${hh}`
     return `${d.getFullYear()}-${m}-${date} ${hh}:${mm}`
 }
 

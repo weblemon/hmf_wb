@@ -8,6 +8,7 @@ import http from '../../../utils/http';
 import Meta from 'antd/lib/card/Meta';
 import RadioGroup from 'antd/lib/radio/group';
 import RadioButton from 'antd/lib/radio/radioButton';
+import { formatTime } from '../../../utils/format';
 
 type Prop = {
     history: History;
@@ -24,6 +25,7 @@ type State = Readonly<{
     arrearNumber: number;
     collectionNumber: number;
     browseNumber: number;
+    sysCloseNumber: number;
 }>
 
 class UserDetail extends Component<Prop, State> {
@@ -33,7 +35,8 @@ class UserDetail extends Component<Prop, State> {
         downNumber: 0,
         arrearNumber: 0,
         collectionNumber: 0,
-        browseNumber: 0
+        browseNumber: 0,
+        sysCloseNumber: 0
     }
 
     renderInfo(userInfo: ResponseUserInfo | undefined) {
@@ -41,7 +44,7 @@ class UserDetail extends Component<Prop, State> {
             const gridStyle: CSSProperties = {
                 height: 100
             }
-            const { changed, publishNumber, downNumber, arrearNumber, collectionNumber, browseNumber } = this.state
+            const { changed, publishNumber, downNumber, arrearNumber, collectionNumber, browseNumber, sysCloseNumber } = this.state
             return (
                 <Row gutter={14}>
                     <Col span={16}>
@@ -151,14 +154,14 @@ class UserDetail extends Component<Prop, State> {
                             <Card.Grid style={gridStyle}>
                                 <Card.Meta
                                     title="注册日期"
-                                    description={new Date(userInfo.rawAddTime).toLocaleDateString()}
+                                    description={formatTime(userInfo.rawAddTime)}
                                 />
                             </Card.Grid>
 
                             <Card.Grid style={gridStyle}>
                                 <Card.Meta
                                     title="更新日期"
-                                    description={userInfo.rawUpdateTime ? new Date(userInfo.rawUpdateTime).toLocaleDateString() : '从未更新'}
+                                    description={userInfo.rawUpdateTime ? formatTime(userInfo.rawUpdateTime) : '从未更新'}
                                 />
                             </Card.Grid>
                     
@@ -221,14 +224,22 @@ class UserDetail extends Component<Prop, State> {
                                     <Statistic valueStyle={ publishNumber >  0 ? {color: '#1890ff', cursor: "pointer"} : {}} title="正上架中房源" value={publishNumber} suffix="条" />
                                 </Link>
                             </Card.Grid>
+                            
                             <Card.Grid>
                                 <Link to={`/admin/user/${userInfo.id}/houses.html?avatarUrl=${userInfo.avatarUrl}&nickName=${userInfo.realName + (userInfo.gender === 1 ? "先生" : "女士")}&auditStatus=${2}`}>
                                     <Statistic valueStyle={ downNumber >  0 ? {color: '#1890ff', cursor: "pointer"} : {}} title="用户下架房源" value={downNumber} suffix="条" />
                                 </Link>
                             </Card.Grid>
+
                             <Card.Grid>
                                 <Link to={`/admin/user/${userInfo.id}/houses.html?avatarUrl=${userInfo.avatarUrl}&nickName=${userInfo.realName + (userInfo.gender === 1 ? "先生" : "女士")}&auditStatus=${1}`}>
                                     <Statistic valueStyle={ arrearNumber >  0 ? {color: '#1890ff', cursor: "pointer"} : {}} title="欠费下架房源" value={arrearNumber} suffix="条" />
+                                </Link>
+                            </Card.Grid>
+
+                            <Card.Grid>
+                                <Link to={`/admin/user/${userInfo.id}/houses.html?avatarUrl=${userInfo.avatarUrl}&nickName=${userInfo.realName + (userInfo.gender === 1 ? "先生" : "女士")}&auditStatus=${3}`}>
+                                    <Statistic valueStyle={ sysCloseNumber >  0 ? {color: '#1890ff', cursor: "pointer"} : {}} title="后台关闭房源" value={sysCloseNumber} suffix="条" />
                                 </Link>
                             </Card.Grid>
 
@@ -392,6 +403,13 @@ class UserDetail extends Component<Prop, State> {
                         auditStatus: 2
                     }
                 }),
+                http.get(`/housingResources/queryPageHouses`, {
+                    params: {
+                        releaseId: userInfo.id,
+                        size: 0,
+                        auditStatus: 3
+                    }
+                }),
                 http.get(`/collection/queryPageCollectionVo`, {
                     params: {
                         userId: userInfo.id,
@@ -413,8 +431,9 @@ class UserDetail extends Component<Prop, State> {
                     publishNumber: result[0],
                     arrearNumber: result[1],
                     downNumber: result[2],
-                    collectionNumber: result[3],
-                    browseNumber: result[4]
+                    sysCloseNumber: result[3],
+                    collectionNumber: result[4],
+                    browseNumber: result[5]
                 })
             })
         }

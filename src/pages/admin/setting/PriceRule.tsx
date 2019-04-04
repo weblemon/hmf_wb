@@ -1,6 +1,6 @@
 import React, { FormEvent, Component } from 'react'
 import '../common.less';
-import { Breadcrumb, Form, Input, Button, Icon, Tooltip, Modal, notification, message } from 'antd';
+import { Breadcrumb, Form, Input, Button, Icon, Tooltip, Modal, notification, message, InputNumber } from 'antd';
 import { Link } from 'react-router-dom';
 import http from '../../../utils/http';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
@@ -21,7 +21,13 @@ class PriceRule extends Component<Prop, State> {
         result: {
             probation: 10,
             probationNum: 10,
-            rule: []
+            rule: [
+                {
+                    min: 0,
+                    max: 0,
+                    tag: 0
+                }
+            ]
         }
     }
 
@@ -29,6 +35,7 @@ class PriceRule extends Component<Prop, State> {
         http.get('rule/queryRule').then((res) => {
             const { data, success } = res.data
             if (data && data.rule) {
+                if (!data.rule) {}
                 data.rule = JSON.parse(data.rule.replace(/\\/g, ""))
                 if (success) {
                     this.setState({
@@ -63,9 +70,11 @@ class PriceRule extends Component<Prop, State> {
                     >
                     <Input.Group compact>
                         <Input style={{width: 40}} disabled placeholder="从" />
-                        <Input
-                            onInput={(e: any) => { 
-                                rules[index].min = e.target.value
+                        <InputNumber
+                            // step={0.01}
+                            value={item.min as number}
+                            onChange={(e) => {
+                                rules[index].min = e as number
                                 this.setState({
                                     result: {
                                         ...this.state.result,
@@ -73,20 +82,13 @@ class PriceRule extends Component<Prop, State> {
                                     }
                                 })
                             }}
-                            maxLength={10}
-                            type="number"
-                            style={{width: 100}}
-                            defaultValue={item.min as string}
                         />
                         <Input style={{width: 40}} disabled placeholder="至" />
-                        <Input
-                            maxLength={10}
-                            type="number"
-                            style={{width: 100}}
-                            defaultValue={item.max as string}
-                            placeholder="留空不限"
-                            onInput={(e: any) => { 
-                                rules[index].max = e.target.value
+                        <InputNumber
+                            // step={0.01}
+                            value={item.max as number}
+                            onChange={(e) => {
+                                rules[index].max = e as number
                                 this.setState({
                                     result: {
                                         ...this.state.result,
@@ -96,13 +98,11 @@ class PriceRule extends Component<Prop, State> {
                             }}
                         />
                         <Input style={{width: 40}} disabled placeholder="条" />
-                        <Input
-                            maxLength={10}
-                            type="number"
-                            style={{width: 100}}
-                            defaultValue={item.tag as string}
-                            onInput={(e: any) => { 
-                                rules[index].tag = e.target.value
+                        <InputNumber
+                            step={0.01}
+                            value={item.tag as number}
+                            onChange={(e) => {
+                                rules[index].tag = e as number
                                 this.setState({
                                     result: {
                                         ...this.state.result,
@@ -203,6 +203,9 @@ class PriceRule extends Component<Prop, State> {
                     <Breadcrumb.Item>收费规则设置</Breadcrumb.Item>
                 </Breadcrumb>
                 <div className="content">
+                    <div className="tools">
+                        <Button type="primary" onClick={this.addRule.bind(this)}><Icon type="plus" /> 添加收费规则</Button>
+                    </div>
                     <Form 
                         className="form"
                         onSubmit={this.submitForm.bind(this)}

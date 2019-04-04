@@ -1,6 +1,6 @@
 import React, { Component, CSSProperties } from 'react'
 
-import { Breadcrumb, Table, notification, Avatar, Switch, Button, DatePicker, Pagination, Row, Col, Modal, Input, Radio, Select, Cascader, Icon } from 'antd';
+import { Breadcrumb, Table, notification, Avatar, Switch, Button, DatePicker, Pagination, Row, Col, Modal, Input, Radio, Select, Cascader, Icon, InputNumber } from 'antd';
 import { Link } from 'react-router-dom';
 import http, { BaseResponse } from '../../../utils/http';
 import { ColumnProps } from 'antd/lib/table';
@@ -13,6 +13,7 @@ import houseDecorationRange, { getHouseDecorationTypeId, getHouseDecorationTypeN
 import { getHouseFloorTypeName } from '../../constants/houseFloor';
 import houseTypeEnum from '../../constants/houseTypeRange';
 import houseingTypeRange, { getHouseingTypeId } from '../../constants/houseingTypeRange';
+import { RangePickerValue } from 'antd/lib/date-picker/interface';
 
 type Prop = {
     location: Location;
@@ -29,6 +30,7 @@ type State = Readonly<{
     editLoading: number | null;
     query: SearchQuery;
     houseType: number;
+    timeRange?: RangePickerValue;
 }>
 
 class HouseList extends Component<Prop, State> {
@@ -42,7 +44,8 @@ class HouseList extends Component<Prop, State> {
         loading: false,
         editLoading: null,
         houseType: 0,
-        query: {}
+        query: {},
+        timeRange: []
     }
 
     render() {
@@ -152,17 +155,18 @@ class HouseList extends Component<Prop, State> {
                         <Row style={rowStyle}>
                             <Col span={col}>
                                 <Input
-                                    type="number"
+                                    type="text"
                                     placeholder="id"
                                     allowClear
                                     style={{ width: 240 }}
+                                    value={query.id}
                                     onInput={(e) => {
                                         this.changeSearchQuery({
-                                            id: Number((e.target as HTMLInputElement).value)
+                                            id: (e.target as HTMLInputElement).value as any
                                         })
                                     }}
                                     onChange={(e) => {
-                                        const v = Number((e.target as HTMLInputElement).value)
+                                        const v = (e.target as HTMLInputElement).value as any
                                         if (v !== 0) {
                                             this.changeSearchQuery({
                                                 id: v
@@ -184,6 +188,7 @@ class HouseList extends Component<Prop, State> {
                                             search: (e.target as HTMLInputElement).value
                                         })
                                     }}
+                                    value={query.search}
                                     onChange={(e) => {
                                         this.changeSearchQuery({
                                             search: (e.target as HTMLInputElement).value
@@ -197,6 +202,7 @@ class HouseList extends Component<Prop, State> {
                                     style={{
                                         width: 240
                                     }}
+                                    value={this.state.timeRange}
                                     onChange={(e, d) => {
                                             const startAddTime = d[0]
                                             const endAddTime = d[1]
@@ -207,6 +213,9 @@ class HouseList extends Component<Prop, State> {
                                                 this.changeSearchQuery({
                                                     startAddTime,
                                                     endAddTime
+                                                })
+                                                this.setState({
+                                                    timeRange: e
                                                 })
                                             }
                                         }
@@ -220,6 +229,7 @@ class HouseList extends Component<Prop, State> {
                                         placeholder="开始面积"
                                         allowClear
                                         style={{ width: 100 }}
+                                        value={query.startHouseArea}
                                         onInput={(e) => {
                                             let v = Number((e.target as HTMLInputElement).value)
                                             if (v < 0) v = 0;
@@ -241,8 +251,10 @@ class HouseList extends Component<Prop, State> {
                                         placeholder="结束面积"
                                         allowClear
                                         style={{ width: 100 }}
+                                        value={query.endHouseArea}
                                         onInput={(e) => {
                                             let v = Number((e.target as HTMLInputElement).value)
+                                            if (!v) return;
                                             if (v !== 0) {
                                                 this.changeSearchQuery({
                                                     endHouseArea: v
@@ -253,6 +265,7 @@ class HouseList extends Component<Prop, State> {
                                         }}
                                         onChange={(e) => {
                                             let v = Number((e.target as HTMLInputElement).value)
+                                            if (!v) return;
                                             if (v !== 0) {
                                                 this.changeSearchQuery({
                                                     endHouseArea: v
@@ -520,7 +533,8 @@ class HouseList extends Component<Prop, State> {
                                 onClick={() => {
                                     this.setState({
                                         query: {},
-                                        houseType: 0
+                                        houseType: 0,
+                                        timeRange: []
                                     }, () => {
                                         this.getHouseList()
                                     })
@@ -536,7 +550,11 @@ class HouseList extends Component<Prop, State> {
                             <Button
                                 type="primary" 
                                 onClick={() => {
-                                    this.getHouseList()
+                                    this.setState({
+                                        current: 1
+                                    }, () => {
+                                        this.getHouseList()
+                                    })
                                 }}
                             >
                                 搜索
@@ -557,6 +575,7 @@ class HouseList extends Component<Prop, State> {
                                     this.getHouseList()
                                 })
                             }}
+                            pageSize={this.state.size}
                             showSizeChanger
                             showQuickJumper
                             pageSizeOptions={['5', '10']}
@@ -628,6 +647,7 @@ class HouseList extends Component<Prop, State> {
                             }}
                             current={this.state.current}
                             size="small"
+                            pageSize={this.state.size}
                             showTotal={(t) => `总共${t}条`}
                             total={this.state.total}
                             onShowSizeChange={(current, size) => {

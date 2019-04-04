@@ -4,6 +4,7 @@ import { LocaleProvider } from 'antd';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
 import * as serviceWorker from './serviceWorker';
 import { Provider } from 'react-redux';
+import '@babel/polyfill';
 
 import App from './App';
 import store from './store';

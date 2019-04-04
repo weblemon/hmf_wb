@@ -19,7 +19,7 @@ class App extends Component {
                         <Redirect exact path={'/'} to={'/admin/'} />
                         <Route exact path={'/login.html'} component={LoginPage} />
                         <Route path={'/admin/'} component={AdminIndex} />
-                        <Route path={'/404.html'} component={NotFound} />
+                        <Route exact path={'/404.html'} component={NotFound} />
                         <Redirect to={'/404.html'} />
                     </Switch>
                 </div>
