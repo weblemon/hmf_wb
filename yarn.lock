@@ -1236,6 +1236,11 @@
   resolved "http://registry.npm.taobao.org/@types/unist/download/@types/unist-2.0.3.tgz#9c088679876f374eb5983f150d4787aa6fb32d7e"
   integrity sha1-nAiGeYdvN061mD8VDUeHqm+zLX4=
 
+"@types/validator@^10.11.0":
+  version "10.11.0"
+  resolved "http://registry.npm.taobao.org/@types/validator/download/@types/validator-10.11.0.tgz#aae9009ce28cc4f878e32c34d3900a81193c98d5"
+  integrity sha1-qukAnOKMxPh44yw005AKgRk8mNU=
+
 "@types/vfile-message@*":
   version "1.0.1"
   resolved "http://registry.npm.taobao.org/@types/vfile-message/download/@types/vfile-message-1.0.1.tgz#e1e9895cc6b36c462d4244e64e6d0b6eaf65355a"
@@ -11158,6 +11163,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+validator@^10.11.0:
+  version "10.11.0"
+  resolved "http://registry.npm.taobao.org/validator/download/validator-10.11.0.tgz#003108ea6e9a9874d31ccc9e5006856ccd76b228"
+  integrity sha1-ADEI6m6amHTTHMyeUAaFbM12sig=
 
 value-equal@^0.4.0:
   version "0.4.0"

@@ -1,18 +1,19 @@
 import React, { Component } from 'react'
 
 import './UserList.less';
-import { Breadcrumb, Table, notification, Avatar, Switch, Button, DatePicker, Row, Col, Input, Radio, Pagination, Icon, Cascader } from 'antd';
+import { Breadcrumb, Table, notification, Avatar, Switch, Button, DatePicker, Row, Col, Input, Radio, Pagination, Icon } from 'antd';
 import { Link } from 'react-router-dom';
-import http, { BaseResponse, qmap } from '../../../utils/http';
+import http, { BaseResponse } from '../../../utils/http';
 import { ColumnProps } from 'antd/lib/table';
 import { Location, History } from 'history';
 import Search from 'antd/lib/input/Search';
 import { formatTime } from '../../../utils/format';
-import { AxiosResponse } from 'axios';
+import { match } from 'react-router';
 
 type Prop = {
     location: Location;
     history: History;
+    match: match<{id: string}>;
 }
 
 type State = Readonly<{
@@ -28,11 +29,9 @@ type State = Readonly<{
     gender?: number | null | "";
     changeStateLoading: null | number;
     changeIsNeedCheckLoading: null | number;
-    district: string[];
-    districtOptions: Result[];
 }>
 
-class UserList extends Component<Prop, State> {
+class UserCustomerList extends Component<Prop, State> {
 
     readonly state: State = {
         records: [],
@@ -43,9 +42,7 @@ class UserList extends Component<Prop, State> {
         loading: false,
         elementSize: "default",
         changeStateLoading: null,
-        changeIsNeedCheckLoading: null,
-        district:[],
-        districtOptions: []
+        changeIsNeedCheckLoading: null
     }
 
     render() {
@@ -63,7 +60,7 @@ class UserList extends Component<Prop, State> {
                 align: 'center',
                 dataIndex: 'avatarUrl',
                 render: (avatarUrl: string) => {
-                    return <Avatar src={avatarUrl} icon="user" />
+                    return <Avatar src={avatarUrl} icon='user' />
                 }
             },
             {
@@ -219,7 +216,13 @@ class UserList extends Component<Prop, State> {
                     <Breadcrumb.Item>
                         <Link to={'/admin/'}>首页</Link>
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item>用户管理</Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <Link to={`/admin/user/list.html`}>用户管理</Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <Link to={`/admin/user/${this.props.match.params.id}.html`}>推广员{this.props.match.params.id}</Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>客户列表</Breadcrumb.Item>
                 </Breadcrumb>
                 
                 <div className="content">
@@ -288,32 +291,6 @@ class UserList extends Component<Prop, State> {
                                     <Radio.Button value={0}>女</Radio.Button>
                                 </Radio.Group>
                             </Col>
-                            <Col span={20}>
-                                <Cascader
-                                    placeholder={'搜索地区'}
-                                    style={{width: 250}}
-                                    loadData={(selectedOptions: any) => {
-                                        const targetOption = selectedOptions[selectedOptions.length - 1];
-                                        targetOption.loading = true;
-                                        this.getDistrictList(targetOption.id, (list) => {
-                                            if (list.length === 0) {
-                                                targetOption.isLeaf = true
-                                            } else {
-                                                targetOption.children = list;
-                                            }
-                                            targetOption.loading = false;
-
-                                            this.setState({
-                                                districtOptions: [...this.state.districtOptions]
-                                            });
-                                        })
-                                    }}
-                                    options={this.state.districtOptions}
-                                    fieldNames={{label: 'fullname', value: 'fullname', children: 'children', key: 'id'}}
-                                    onChange={this.handleDistrictChange.bind(this)}
-                                    changeOnSelect
-                                />
-                            </Col>
                         </Row>
                     </div>
                     <div className="pager">
@@ -368,57 +345,21 @@ class UserList extends Component<Prop, State> {
         )
     }
 
-    private handleDistrictChange(e: string[], selectedOptions: any) {
-      if (Array.isArray(e) && e[0]) {
-        const start = e[0]
-        if (/北京|上海|重庆|天津|香港|澳门/.test(start)) {
-            this.setState({
-                district: [start, ...e]
-            }, () => {
-                this.getUserList()
-            })
-        } else {
-            this.setState({
-                district: [start, ...e]
-            }, () => {
-                this.getUserList()
-            })
-        }
-      }
-    }
-
-    /**
-     * 获取用户列表
-     */
     public getUserList() {
         if (this.state.loading) return;
         this.setState({
             loading: true
         })
-        const { size, search, gender, type, current, district } = this.state
+        const { size, search, gender, type, current } = this.state
         const params: any = {
             order: 'asc',
             current,
+            parentId: this.props.match.params.id,
             size
         }
         if (search) {
             params.search = search
             params.current = 1
-        }
-
-        if (Array.isArray(district)) {
-            const [ province, city, region ] = district
-            if (province) {
-                params.province = province
-            }
-
-            if (city) {
-                params.city = city
-            }
-
-            if (region) {
-                params.region = region
-            }
         }
         if (gender !== '') {
             params.gender = gender
@@ -454,42 +395,11 @@ class UserList extends Component<Prop, State> {
 
     public componentWillMount() {
         this.getUserList();
-        this.getDistrictList('', (list) => {
-            this.setState({
-                districtOptions: list
-            })
-        });
-    }
-
-    /**
-     * 获取行政地区
-     */
-    public getDistrictList(id: string = '', callback?: (results: Result[]) => void) {
-        const params: any = {
-            key: '7TCBZ-GIF6U-7OZVB-4QDKC-MHPZO-RZFJ7',
-            output: 'json'
-        }
-        if (id) {
-            params.id = id
-        }
-        qmap.get('/ws/district/v1/getchildren', {
-            params
-        }).then((res: AxiosResponse<DistrictList>) => {
-            if (res.data.status === 0) {
-                if (typeof callback === 'function') {
-                    const data = res.data.result[0]
-                    callback(data.map(item => {
-                        item.isLeaf = item.name ? false : true
-                        return item;
-                    }))
-                }
-            }
-        })
     }
 
 }
 
-export default UserList
+export default UserCustomerList
 
 export interface ResponseUserList {
   total: number;
@@ -525,27 +435,4 @@ export interface Record {
   balance: number;
   code?: any;
   sms?: any;
-}
-
-
-interface DistrictList {
-  status: number;
-  message: string;
-  data_version: string;
-  result: Result[][];
-}
-
-interface Result {
-  id: string;
-  name: string;
-  fullname: string;
-  pinyin: string[];
-  location: LocationPoistion;
-  children: Result[];
-  isLeaf: boolean;
-}
-
-interface LocationPoistion {
-  lat: number;
-  lng: number;
 }

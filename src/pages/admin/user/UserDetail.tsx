@@ -1,14 +1,16 @@
 import React, { Component, CSSProperties } from 'react'
 import '../common.less'
-import { Breadcrumb, Row, Col, Avatar, Card, Switch, Input, Radio, Icon, Button, message, notification, Statistic } from 'antd';
+import { Breadcrumb, Row, Col, Avatar, Card, Switch, Input, Radio, Icon, Button, message, notification, Statistic, Select, Modal } from 'antd';
 import { Link } from 'react-router-dom';
 import { match } from 'react-router';
 import { Location, History } from 'history';
-import http from '../../../utils/http';
+import http, { BaseResponse } from '../../../utils/http';
 import Meta from 'antd/lib/card/Meta';
 import RadioGroup from 'antd/lib/radio/group';
 import RadioButton from 'antd/lib/radio/radioButton';
 import { formatTime } from '../../../utils/format';
+import { AxiosResponse } from 'axios';
+import { userInfo } from 'os';
 
 type Prop = {
     history: History;
@@ -26,6 +28,9 @@ type State = Readonly<{
     collectionNumber: number;
     browseNumber: number;
     sysCloseNumber: number;
+    searchLoading: boolean;
+    search: string;
+    searchList: ResponseUserInfo[];
 }>
 
 class UserDetail extends Component<Prop, State> {
@@ -36,7 +41,10 @@ class UserDetail extends Component<Prop, State> {
         arrearNumber: 0,
         collectionNumber: 0,
         browseNumber: 0,
-        sysCloseNumber: 0
+        sysCloseNumber: 0,
+        searchLoading: false,
+        search: '',
+        searchList: []
     }
 
     renderInfo(userInfo: ResponseUserInfo | undefined) {
@@ -51,7 +59,7 @@ class UserDetail extends Component<Prop, State> {
                         <Card
                             title={
                                 <div className="user">
-                                    <Avatar src={userInfo.avatarUrl} />
+                                    <Avatar src={userInfo.avatarUrl} icon="user" />
                                     <span style={{marginLeft: 10}}>{userInfo.realName + (userInfo.gender === 1 ? '先生' : '女士')}</span>
                                 </div>
                             }
@@ -103,6 +111,7 @@ class UserDetail extends Component<Prop, State> {
                                         >
                                             <RadioButton value={1}>房东</RadioButton>
                                             <RadioButton value={2}>中介</RadioButton>
+                                            <RadioButton value={3}>推广</RadioButton>
                                         </RadioGroup>
                                     }
                                 />
@@ -122,7 +131,7 @@ class UserDetail extends Component<Prop, State> {
                                             defaultValue={userInfo.gender}
                                         >
                                             <RadioButton value={1}>男</RadioButton>
-                                            <RadioButton value={2}>女</RadioButton>
+                                            <RadioButton value={0}>女</RadioButton>
                                         </RadioGroup>
                                     }
                                 />
@@ -213,6 +222,79 @@ class UserDetail extends Component<Prop, State> {
                                     }
                                 />
                             </Card.Grid>
+
+                            {
+                                userInfo.type === 3 ?
+                                (
+                                    <Card.Grid style={gridStyle}>
+                                        <Card.Meta
+                                            title="客户列表"
+                                            description={
+                                                <Link to={`/admin/user/${userInfo.id}/customer-list.html`}>查看客户</Link>
+                                            }
+                                        />
+                                    </Card.Grid>
+                                ) :
+                                (
+                                    <Card.Grid style={gridStyle}>
+                                        <Card.Meta
+                                            title={
+                                                <div style={{
+                                                    display: "flex",
+                                                    justifyContent: "space-between"
+                                                }}>
+                                                    <span>所属推广人</span>
+                                                    <Button size="small" onClick={() => {
+                                                        if (userInfo.parentId) {
+                                                            this.props.history.push(`/admin/user/${userInfo.parentId}.html`)
+                                                        } else {
+                                                            Modal.warn({
+                                                                title: '提示',
+                                                                content: '该用户，未绑定推广人！'
+                                                            })
+                                                        }
+                                                    }}>查看</Button>
+                                                </div>
+                                            }
+                                            description={
+                                                <Select
+                                                    showSearch
+                                                    value={this.state.search || userInfo.parentId}
+                                                    placeholder={'搜索推广专员'}
+                                                    loading={this.state.searchLoading}
+                                                    style={{width: '100%'}}
+                                                    filterOption={false}
+                                                    onSearch={(e) => {
+                                                        const params: any = {};
+                                                        if (e) {
+                                                            params.search = e
+                                                        }
+                                                        this.searchParentList(params);
+                                                    }}
+                                                    onChange={(e) => {
+                                                        this.setState({
+                                                            search: e as string
+                                                        })
+                                                        this.changeUserInfo({
+                                                            parentId: e as number
+                                                        })
+                                                    }}
+                                                >
+                                                    {
+                                                        this.state.searchList.map((k) => {
+                                                            return (
+                                                                <Select.Option key={k.id} value={k.id}>{k.realName}</Select.Option>
+                                                            )
+                                                        })
+                                                    }
+                                                </Select>
+                                            }
+                                        />
+                                    </Card.Grid>
+                                )
+                            }
+
+                            
                         </Card>
                     </Col>
                     <Col span={8}>
@@ -255,6 +337,28 @@ class UserDetail extends Component<Prop, State> {
                 </Row>
             )
         }
+    }
+
+    searchParentList(params: any = {}) {
+        this.setState({
+            searchLoading: true
+        })
+        http.get('/users/queryUserPage', {
+            params
+        }).then((res: AxiosResponse<UserList>) => {
+            const { success, data } = res.data
+            if (success) {
+                const { records } = data
+                this.setState({
+                    searchLoading: false,
+                    searchList: records.filter(item => item.type === 3)
+                })
+            } else {
+                this.setState({
+                    searchLoading: false
+                })
+            }
+        })
     }
 
     diffUserInfo() {
@@ -364,16 +468,28 @@ class UserDetail extends Component<Prop, State> {
         this.getUserInfo()
     }
 
+    componentDidUpdate(nextProp: Prop) {
+        if (this.props.match.params.id !== nextProp.match.params.id) {
+            this.getUserInfo();
+        }
+    }
+
     getUserInfo() {
         http
             .get(`/users/queryUser?id=${this.props.match.params.id}`)
             .then((res) => {
-                const data = res.data.data
+                const data: ResponseUserInfo = res.data.data
                 this.setState({
                     userInfo: data,
                     originUserInfo: JSON.parse(JSON.stringify(data))
                 }, () => {
                     this.getUserPublishCount()
+                    if (data.parentId) {
+                        this.searchParentList({
+                            type: 3,
+                            id: data.parentId
+                        })
+                    }
                 })
             })
     }
@@ -467,6 +583,15 @@ interface ResponseUserInfo {
   province: string;
   balance: number;
   isNeedCheck: number;
+  parentId?: number;
   code?: any;
   sms?: any;
 }
+
+type UserList = BaseResponse<{
+    current: number;
+    pages: number;
+    records: ResponseUserInfo[];
+    size: number;
+    total: number;
+}>

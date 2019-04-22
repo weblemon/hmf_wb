@@ -2,7 +2,7 @@ import { AdminActionTypes, AdminActions } from './action';
 
 const initState: UserState = {
     user: null,
-    Authorization: localStorage.getItem('authorization')
+    Authorization: sessionStorage.getItem('authorization')
 }
 
 export function userReducer(state = initState, action: AdminActions) {

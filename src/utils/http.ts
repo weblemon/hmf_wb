@@ -8,6 +8,11 @@ const http = axios.create({
     }
 })
 
+export const qmap = axios.create({
+    timeout: 1000 * 30,
+    baseURL: '/qmap'
+})
+
 /**
  * 拦截请求配置
  */
@@ -15,7 +20,7 @@ http.interceptors.request.use((config) => {
     // config.data  请求体
     // config.params 查询字符串的参数
     config.headers = config.headers = {}
-    config.headers['Authorization'] = localStorage.getItem('authorization')
+    config.headers['Authorization'] = sessionStorage.getItem('authorization')
     return config
 })
 

@@ -80,7 +80,7 @@ class UserCashFlow extends PureComponent<Prop, State> {
                     <div className="user-info">
                         <Card>
                             <Meta
-                                avatar={<Avatar src={avatarUrl}/>}
+                                avatar={<Avatar src={avatarUrl} icon="user"/>}
                                 title={nickName}
                                 description={'流水详情'}
                             />

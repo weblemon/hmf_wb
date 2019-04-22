@@ -166,7 +166,7 @@ class UserHouseList extends Component<Prop, State> {
                 </Breadcrumb>
                 <Card>
                     <Meta
-                        avatar={<Avatar src={avatarUrl} />}
+                        avatar={<Avatar src={avatarUrl} icon='user' />}
                         title={nickName}
                         description={'房源列表'}
                     />

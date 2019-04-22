@@ -25,7 +25,8 @@ class LoginPage extends Component<IProps, any> {
     readonly state = {
         spinning: false,
         loading: false,
-        tms: new Date().getTime()
+        tms: new Date().getTime(),
+        username: ''
     }
 
     render() {
@@ -118,7 +119,7 @@ class LoginPage extends Component<IProps, any> {
                                         )
                                     }
                                     <Spin spinning={this.state.spinning}>
-                                        <img onClick={(e) => this.setState({spinning: true, tms: e.timeStamp})} onLoad={() => this.setState({spinning: false})} style={{height: 32}} src={'/proxyapi/util/validateCode?userName=HousingManagement&tms=' + this.state.tms} />
+                                        <img onClick={(e) => this.setState({spinning: true, tms: e.timeStamp})} onLoad={() => this.setState({spinning: false})} style={{height: 32}} src={`/proxyapi/util/validateCode?userName=HousingManagement&tms=` + this.state.tms} />
                                     </Spin>
                                 </div>
                             </Form.Item>
@@ -195,7 +196,7 @@ export default Form.create({name: 'login'})(
                     type: AdminActionTypes.SET_AUTHORIZATION,
                     Authorization
                 }
-                localStorage.setItem('authorization', Authorization);
+                sessionStorage.setItem('authorization', Authorization);
                 dispatch(action)
             }
         })

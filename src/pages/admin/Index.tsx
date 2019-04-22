@@ -18,6 +18,8 @@ import { WrappedFormUtils } from 'antd/lib/form/Form';
 import http from '../../utils/http';
 import UserCashFlow from './user/UserCashFlow';
 import NotFound from './NotFound';
+import ServiceList from './service/List';
+import UserCustomerList from './user/UserCustomerList';
 
 interface Prop extends DispatchProp {
     form: WrappedFormUtils;
@@ -46,19 +48,22 @@ export class AdminIndex extends Component<Prop, State> {
             this.props.history.replace('/admin/welcome.html')
         }
 
+        let isLogOut = false;
         /**
          * 拦截响应内容
          */
         http.interceptors.response.use((response) => {
             // 处理收到的响应结果
             // response.data
-            if (response.data.code === '-1' && localStorage.getItem('authorization')) {
+            if (response.data.code === '-2' || !sessionStorage.getItem('authorization')) {
+                if (isLogOut) return response;
                 this.props.history.replace('/login.html')
                 this.props.logOut()
                 notification.error({
-                    message: '登录过期',
+                    message: '提示',
                     description: '登录过期，请重新登录。'
                 })
+                isLogOut = true;
             }
             return response
         })
@@ -140,9 +145,11 @@ export class AdminIndex extends Component<Prop, State> {
                             <Route exact path={'/admin/'} component={Welcome} />
                             <Route exact path={'/admin/welcome.html'} component={Welcome} />
                             <Route exact path={'/admin/user/list.html'} component={UserList} />
+                            <Route exact path={'/admin/service/list.html'} component={ServiceList} />
                             <Route exact path={'/admin/user/:id.html'} component={UserDetail} />
                             <Route exact path={'/admin/house/list.html'} component={HouseList} />
                             <Route exact path={'/admin/house/:id.html'} component={HouseDetail} />
+                            <Route exact path={'/admin/user/:id/customer-list.html'} component={UserCustomerList} />
                             <Route exact path={'/admin/user/:id/houses.html'} component={UserHouseList} />
                             <Route exact path={'/admin/user/:id/cashflow.html'} component={UserCashFlow} />
                             <Route exact path={'/admin/setting/price-rule.html'} component={PriceRule} />
@@ -299,7 +306,7 @@ export default connect((state: { user: UserState }) => {
                 Authorization: null
             };
             dispatch(action)
-            localStorage.removeItem('authorization');
+            sessionStorage.removeItem('authorization');
         }
     }
 })(Form.create({name: 'changepwd'})(AdminIndex as any));

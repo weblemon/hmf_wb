@@ -24,6 +24,13 @@ export const homeMenu: HomeMenuItem[] = [
         url: '/admin/house/list.html'
     },
     {
+        id:2,
+        name: '服务管理',
+        icon: 'radar-chart',
+        type: 1,
+        url: '/admin/service/list.html'
+    },
+    {
         id: 6,
         name: '用户管理',
         icon: 'user',

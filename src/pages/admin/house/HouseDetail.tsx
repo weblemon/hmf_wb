@@ -47,7 +47,7 @@ class HouseDetail extends Component<Prop, State> {
                             extra={
                                 <Tooltip placement="rightTop" title={'查看用户详情'}>
                                     <Link to={`/admin/user/${houseInfo.user.id}.html`}>
-                                        <Avatar src={houseInfo.user.avatarUrl} />
+                                        <Avatar src={houseInfo.user.avatarUrl} icon="user" />
                                     </Link>
                                 </Tooltip>
                                 
@@ -183,7 +183,8 @@ class HouseDetail extends Component<Prop, State> {
                                 <Card.Meta
                                     title="状态"
                                     description={
-                                        <Select 
+                                        <Select
+                                            style={{width: '100%'}}
                                             onChange={(e) => {
                                                 http.post('/housingResources/save', {
                                                     id: houseInfo.id,
