@@ -47,6 +47,7 @@ const houseDecorationEnum: DecorationEnums = [
  * 根据name返回装修类型id
  */
 export function getHouseDecorationTypeId(name: string): number {
+    if (!name) return 0
     return (houseDecorationEnum.find((item) => item.name === name) as DecorationEnum).id
 }
 
@@ -54,6 +55,7 @@ export function getHouseDecorationTypeId(name: string): number {
  * 根据id返回装修类型name
  */
 export function getHouseDecorationTypeName(id: number): string {
+    if (!id) return houseDecorationEnum[0].name
     return (houseDecorationEnum.find(item => item.id === id) as DecorationEnum).name
 }
 

@@ -1,121 +1,31 @@
 import React, { Component } from 'react'
-import { Breadcrumb, Button, Pagination, Table, Modal, Form, Input, notification, Switch, message } from 'antd';
+import { Breadcrumb, Button, Table, Modal, Form, Input, notification, Switch } from 'antd';
 import { Link } from 'react-router-dom';
 import { ColumnProps } from 'antd/lib/table';
-import TextArea from 'antd/lib/input/TextArea';
-import { WrappedFormUtils } from 'antd/lib/form/Form';
+import {FormComponentProps} from 'antd/lib/form/Form';
 import { isMobilePhone, isURL } from 'validator';
 import http from '../../../utils/http';
 import { AxiosResponse } from 'axios';
 
-type Prop = {
-    form: WrappedFormUtils;
-}
-
-type State = Readonly<{
-    size: number;
-    total: number;
-    current: number;
-    records?: Record[];
-    pages?: number;
-    loading: boolean;
-    modalTitle: null | '新增服务' | '修改服务';
-    editData?: Data;
-    changeStateLoading: number | null;
-}>
-
-class ServiceList extends Component<Prop, State> {
-
-    readonly state: State = {
+class ServiceList extends Component<Props, State> {
+    public readonly state: State = {
         size: 10,
         total: 0,
         current: 1,
         loading: false,
         modalTitle: null,
         changeStateLoading: null
-    }
-
-    componentWillMount() {
+    };
+    public componentWillMount() {
         this.getServiceList();
     }
-
-    getServiceList() {
-        const { size, current } = this.state
-        this.setState({
-            loading: true
-        })
-        http.get('/adsever/queryAdPage', {
-           params: {
-               size,
-               order: 'desc',
-               state: 0,
-               current
-           }
-        }).then((res: AxiosResponse<ResponseData<Datum>>) => {
-            const { success, data, message } =  res.data
-            if (success) {
-                const { records, current, total, pages } = data
-                this.setState({
-                    records,
-                    current,
-                    total,
-                    pages,
-                    loading: false
-                })
-            } else {
-                notification.error({
-                    message: '错误',
-                    description: message
-                })
-            }
-            
-        }).catch(e => {
-            this.setState({
-                loading: false
-            })
-        })
-    }
-
-    saveService() {
-        this.props.form.validateFields((e, v) => {
-            if (!e) {
-                if (this.state.modalTitle === '修改服务' && this.state.editData) {
-                    v = {
-                        id: this.state.editData.id,
-                        ...v
-                    }
-                }
-                http.post('/adsever/save', {
-                    ...v
-                }).then((res: AxiosResponse<ResponseData<Data>>) => {
-                    const { success, message, data } = res.data
-                    if (success) {
-                        this.getServiceList()
-                        this.props.form.resetFields()
-                        this.setState({
-                            modalTitle: null
-                        })
-                        notification.success({
-                            message: '提示',
-                            description:'修改成功'
-                        })
-                    } else {
-                        notification.error({
-                            message: '提示',
-                            description: message
-                        })
-                    }
-                })
-            }
-        })
-    }
-
-    render() {
+    public render() {
         const columns: ColumnProps<Record>[] = [
             {
                 title: 'ID',
                 width: 150,
                 dataIndex: 'id',
+                fixed: 'left',
             },
             {
                 title: '标题',
@@ -126,16 +36,19 @@ class ServiceList extends Component<Prop, State> {
             {
                 title: '描述',
                 align: 'center',
+                width: 500,
                 dataIndex: 'content',
             },
             {
                 title: '链接地址',
                 align: 'center',
+                width: 500,
                 dataIndex: 'surl',
             },
             {
                 title: '电话',
                 align: 'center',
+                width: 300,
                 dataIndex: 'phone',
             },
             {
@@ -151,13 +64,13 @@ class ServiceList extends Component<Prop, State> {
                             alignItems: 'center'
                         }}>
                             <Switch
-                                defaultChecked={item.state === 0 ? true : false}
+                                defaultChecked={item.state === 0}
                                 style={{marginRight: 20}}
                                 loading={this.state.changeStateLoading === index}
                                 onChange={(e) => {
                                     this.setState({
                                         changeStateLoading: index
-                                    })
+                                    });
                                     const data = JSON.parse(JSON.stringify(item));
                                     data.state = e ? 0 : 1;
                                     http.post('/adsever/save', data).then((res: AxiosResponse<ResponseData<Datum>>) => {
@@ -165,7 +78,7 @@ class ServiceList extends Component<Prop, State> {
                                             notification.success({
                                                 message: '提示',
                                                 description: e ? '已启用' : '已停用'
-                                            })
+                                            });
                                             this.getServiceList()
                                         } else {
                                             notification.error({
@@ -186,7 +99,7 @@ class ServiceList extends Component<Prop, State> {
                                     this.setState({
                                         modalTitle: '修改服务',
                                         editData: item
-                                    })
+                                    });
                                     this.props.form.setFieldsValue({
                                         title: item.title,
                                         content: item.content,
@@ -199,9 +112,8 @@ class ServiceList extends Component<Prop, State> {
                     )
                 }
             }
-
-        ]
-        const { getFieldDecorator } = this.props.form
+        ];
+        const { getFieldDecorator } = this.props.form;
         return (
             <div className="admin-child-page">
                 <Breadcrumb className="breadcrumb">
@@ -235,7 +147,7 @@ class ServiceList extends Component<Prop, State> {
                                 this.setState({current}, () => {
                                     // this.getHouseList()
                                 })
-                            }} 
+                            }}
                         />
                     </div> */}
 
@@ -245,11 +157,11 @@ class ServiceList extends Component<Prop, State> {
                         size="small"
                         columns={columns}
                         rowKey="id"
-                        dataSource={this.state.records} 
+                        dataSource={this.state.records}
                         pagination={false}
                         loading={this.state.loading}
                     >
-                        
+
                     </Table>
 
                     {/* <div className="pager">
@@ -272,7 +184,7 @@ class ServiceList extends Component<Prop, State> {
                                 this.setState({current}, () => {
                                     // this.getHouseList()
                                 })
-                            }} 
+                            }}
                         />
                     </div> */}
                 </div>
@@ -311,7 +223,7 @@ class ServiceList extends Component<Prop, State> {
                                     <Input autoComplete="off" placeholder="请输入标题" />
                                 )
                             }
-                            
+
                         </Form.Item>
 
                         <Form.Item
@@ -334,7 +246,7 @@ class ServiceList extends Component<Prop, State> {
                                     <Input placeholder="请输入服务内容" />
                                 )
                             }
-                            
+
                         </Form.Item>
 
                         <Form.Item
@@ -344,8 +256,8 @@ class ServiceList extends Component<Prop, State> {
                                 getFieldDecorator('phone', {
                                     rules: [
                                         {
-                                            validator: (rule, value, callback) => {
-                                                if (!value) return callback()
+                                            validator: (rule, value: any, callback: any) => {
+                                                if (!value) return callback();
                                                 if (isMobilePhone(value, 'zh-CN')) {
                                                     callback()
                                                 } else {
@@ -363,7 +275,7 @@ class ServiceList extends Component<Prop, State> {
                                     <Input placeholder="请输入电话号码" />
                                 )
                             }
-                            
+
                         </Form.Item>
 
                         <Form.Item
@@ -373,8 +285,8 @@ class ServiceList extends Component<Prop, State> {
                                 getFieldDecorator('surl', {
                                     rules: [
                                         {
-                                            validator: (rule, value, callback) => {
-                                                if (!value) return callback()
+                                            validator: (rule, value: any, callback: any) => {
+                                                if (!value) return callback();
                                                 if (isURL(value)) {
                                                     callback()
                                                 } else {
@@ -394,13 +306,92 @@ class ServiceList extends Component<Prop, State> {
             </div>
         )
     }
-
+    private getServiceList() {
+        const { size, current } = this.state;
+        this.setState({
+            loading: true
+        });
+        http.get('/adsever/queryAdPage', {
+           params: {
+               size,
+               order: 'desc',
+               current
+           }
+        }).then((res: AxiosResponse<ResponseData<Datum>>) => {
+            const { success, data, message } =  res.data;
+            if (success) {
+                const { records, current, total, pages } = data;
+                this.setState({
+                    records,
+                    current,
+                    total,
+                    pages,
+                    loading: false
+                })
+            } else {
+                notification.error({
+                    message: '错误',
+                    description: message
+                })
+            }
+            
+        }).catch(() => {
+            this.setState({
+                loading: false
+            })
+        })
+    }
+    private saveService() {
+        this.props.form.validateFields((e, v) => {
+            if (!e) {
+                if (this.state.modalTitle === '修改服务' && this.state.editData) {
+                    v = {
+                        id: this.state.editData.id,
+                        ...v
+                    }
+                }
+                http.post('/adsever/save', {
+                    ...v
+                }).then((res: AxiosResponse<ResponseData<Data>>) => {
+                    const { success, message } = res.data;
+                    if (success) {
+                        this.getServiceList();
+                        this.props.form.resetFields();
+                        this.setState({
+                            modalTitle: null
+                        });
+                        notification.success({
+                            message: '提示',
+                            description:'修改成功'
+                        })
+                    } else {
+                        notification.error({
+                            message: '提示',
+                            description: message
+                        })
+                    }
+                })
+            }
+        })
+    }
 }
-
 export default Form.create({
     name: 'service'
 })(ServiceList as any)
 
+type Props = OwnProps & FormComponentProps;
+type State = Readonly<{
+    size: number;
+    total: number;
+    current: number;
+    records?: Record[];
+    pages?: number;
+    loading: boolean;
+    modalTitle: null | '新增服务' | '修改服务';
+    editData?: Data;
+    changeStateLoading: number | null;
+}>
+interface OwnProps {}
 interface ResponseData<T> {
   success: boolean;
   code: string;
@@ -408,7 +399,6 @@ interface ResponseData<T> {
   draw: number;
   data: T;
 }
-
 interface Data {
   id: number;
   deleted: boolean;
@@ -421,8 +411,6 @@ interface Data {
   state: number;
   surl?: any;
 }
-
-
 interface Datum {
   total: number;
   size: number;
@@ -430,7 +418,6 @@ interface Datum {
   current: number;
   records: Record[];
 }
-
 interface Record {
   id: number;
   deleted: boolean;

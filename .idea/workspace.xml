@@ -1,0 +1,911 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="fcc42080-38ef-4eeb-a212-537bc3b0bb6c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/pages/admin/setting/LocaleRule.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/admin/user/UserRuleList.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/constants/StoreActions.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/constants/routes.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/store/actions/admin/AdminUserAction.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/store/reducers/admin/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/apis/deleteUser.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/apis/district.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/apis/getPageCode.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/LoginPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/LoginPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/NotFound.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/NotFound.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/Index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/Index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/NotFound.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/NotFound.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/common.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/common.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/house/HouseDetail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/house/HouseDetail.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/house/HouseList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/house/HouseList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/index.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/index.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/service/List.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/service/List.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/setting/PriceRule.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/setting/PriceRule.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/user/UserCashFlow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/user/UserCashFlow.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/user/UserCustomerList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/user/UserCustomerList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/user/UserDetail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/user/UserDetail.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/user/UserHouseList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/user/UserHouseList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/user/UserList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/user/UserList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/admin/welcome/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/admin/welcome/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/constants/homeMenu.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/constants/homeMenu.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/constants/houseDecorationRange.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/constants/houseDecorationRange.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/constants/houseDoorLookTypeRange.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/constants/houseDoorLookTypeRange.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/constants/houseElevatorTypeRange.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/constants/houseElevatorTypeRange.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/constants/houseOrientation.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/constants/houseOrientation.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/constants/houseingTypeRange.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/constants/houseingTypeRange.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/setupProxy.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/setupProxy.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/reducers/user/action.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/reducers/user/index.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/http.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/http.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/.tmp/" />
+    <ignored path="$PROJECT_DIR$/temp/" />
+    <ignored path="$PROJECT_DIR$/tmp/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="hmf-web" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>ref</find>
+      <find>id, fullname, lat, lng</find>
+    </findStrings>
+    <replaceStrings>
+      <replace />
+    </replaceStrings>
+    <dirStrings>
+      <dir>I:\projects\hmf-web\src\pages\admin</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/pages/admin/house/HouseDetail.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/admin/NotFound.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/NotFound.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/constants/StoreActions.ts" />
+        <option value="$PROJECT_DIR$/src/store/reducers/user/index.ts" />
+        <option value="$PROJECT_DIR$/src/store/actions/AdminActions.ts" />
+        <option value="$PROJECT_DIR$/src/store/actions/admin/AdminUserLoginAction.ts" />
+        <option value="$PROJECT_DIR$/src/store/actions/admin/UserLoginAction.ts" />
+        <option value="$PROJECT_DIR$/src/store/reducers/user/action.ts" />
+        <option value="$PROJECT_DIR$/src/store/index.ts" />
+        <option value="$PROJECT_DIR$/src/pages/admin/user/UserCashFlow.tsx" />
+        <option value="$PROJECT_DIR$/node_modules/antd/lib/table/interface.d.ts" />
+        <option value="$PROJECT_DIR$/src/pages/admin/house/HouseList.tsx" />
+        <option value="$PROJECT_DIR$/package.json" />
+        <option value="$PROJECT_DIR$/src/pages/admin/user/UserCommendList.tsx" />
+        <option value="$PROJECT_DIR$/src/store/reducers/admin/index.ts" />
+        <option value="$PROJECT_DIR$/src/store/actions/admin/AdminUserAction.ts" />
+        <option value="$PROJECT_DIR$/src/pages/admin/locale/Setting.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/admin/routes.ts" />
+        <option value="$PROJECT_DIR$/src/utils/apis/getDistrictPage.ts" />
+        <option value="$PROJECT_DIR$/src/pages/admin/setting/PriceRule.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/constants/tableConfig.ts" />
+        <option value="$PROJECT_DIR$/src/pages/admin/setting/LocaleRule.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/admin/user/UserCustomerList.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/admin/user/UserHouseList.tsx" />
+        <option value="$PROJECT_DIR$/src/utils/apis/district.ts" />
+        <option value="$PROJECT_DIR$/src/utils/http.ts" />
+        <option value="$PROJECT_DIR$/src/utils/apis/getPageCode.ts" />
+        <option value="$PROJECT_DIR$/src/setupProxy.js" />
+        <option value="$PROJECT_DIR$/src/pages/admin/welcome/index.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/admin/user/UserDetail.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/constants/routes.ts" />
+        <option value="$PROJECT_DIR$/src/pages/constants/homeMenu.ts" />
+        <option value="$PROJECT_DIR$/src/utils/apis/getUserList.ts" />
+        <option value="$PROJECT_DIR$/src/utils/apis/deleteUser.ts" />
+        <option value="$PROJECT_DIR$/src/pages/admin/user/UserList.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/admin/Index.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/admin/user/UserRuleList.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/LoginPage.tsx" />
+        <option value="$PROJECT_DIR$/src/pages/admin/service/List.tsx" />
+        <option value="J:/homework/soft/Tools/quick_ma (1)" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBowerSettings">
+    <node-interpreter value="project" />
+    <bower-package value="" />
+    <bower.json value="" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="ProjectConfigurationFiles">
+    <option name="files">
+      <list>
+        <option value="$PROJECT_DIR$/.idea/hmf-web.iml" />
+        <option value="$PROJECT_DIR$/.idea/misc.xml" />
+        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
+        <option value="$PROJECT_DIR$/.idea/modules.xml" />
+        <option value="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="243" />
+    <option name="y" value="114" />
+    <option name="width" value="1634" />
+    <option name="height" value="983" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="Scope" currentSubView="Scope '项目文件'; set:项目文件; class com.intellij.psi.search.scope.ProjectFilesScope" proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane" />
+      <pane id="Scope">
+        <subPane subId="Scope '项目文件'; set:项目文件; class com.intellij.psi.search.scope.ProjectFilesScope">
+          <expand>
+            <path>
+              <item name="hmf-web" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="I:\mfx\hmf-web" type="442cc68d:ScopeViewTreeModel$RootNode" />
+            </path>
+            <path>
+              <item name="hmf-web" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="I:\mfx\hmf-web" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="build" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="add_unversioned_files" value="$PROJECT_DIR$/yarn-error.log" />
+    <property name="javascript.nodejs.core.library.configured.version" value="10.14.2" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path" value="node" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
+    <property name="ts.external.directory.path" value="I:\mfx\hmf-web\node_modules\typescript\lib" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="I:\projects\hmf-web\src\pages\admin\setting" />
+      <recent name="I:\projects\hmf-web\src\pages\constants" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="npm.build">
+    <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.build" />
+        <item itemvalue="npm.start" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fcc42080-38ef-4eeb-a212-537bc3b0bb6c" name="Default Changelist" comment="" />
+      <created>1561191662652</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1561191662652</updated>
+      <workItem from="1561191663952" duration="11624000" />
+      <workItem from="1561216551253" duration="1709000" />
+      <workItem from="1561218285858" duration="1700000" />
+      <workItem from="1561220398277" duration="824000" />
+      <workItem from="1561223864429" duration="786000" />
+      <workItem from="1561253708396" duration="777000" />
+      <workItem from="1561296632175" duration="1992000" />
+      <workItem from="1561299987777" duration="3692000" />
+      <workItem from="1561304156676" duration="292000" />
+      <workItem from="1561535521541" duration="11418000" />
+      <workItem from="1561558939944" duration="398000" />
+      <workItem from="1561562311955" duration="2920000" />
+      <workItem from="1561645589471" duration="13000" />
+      <workItem from="1561652992343" duration="438000" />
+      <workItem from="1561701469735" duration="21000" />
+      <workItem from="1561701500074" duration="26000" />
+      <workItem from="1561701536236" duration="693000" />
+      <workItem from="1562233444807" duration="1382000" />
+      <workItem from="1563104333611" duration="27000" />
+      <workItem from="1563104378195" duration="166000" />
+      <workItem from="1563443518543" duration="31000" />
+      <workItem from="1563641495790" duration="1987000" />
+      <workItem from="1564074042729" duration="3710000" />
+      <workItem from="1564116442288" duration="469000" />
+      <workItem from="1564126802727" duration="1852000" />
+      <workItem from="1564137984442" duration="1454000" />
+      <workItem from="1564142276555" duration="357000" />
+      <workItem from="1564211701784" duration="128000" />
+      <workItem from="1564240715126" duration="1890000" />
+      <workItem from="1564282426806" duration="15469000" />
+      <workItem from="1564315993274" duration="3001000" />
+      <workItem from="1564378646623" duration="2664000" />
+      <workItem from="1564381977093" duration="66000" />
+      <workItem from="1564390626663" duration="1875000" />
+      <workItem from="1564462384316" duration="1817000" />
+      <workItem from="1564916690017" duration="3816000" />
+      <workItem from="1564924473150" duration="584000" />
+      <workItem from="1564925137463" duration="21000" />
+      <workItem from="1565280214089" duration="1152000" />
+      <workItem from="1565332102895" duration="31000" />
+      <workItem from="1565581117943" duration="2738000" />
+      <workItem from="1565591426730" duration="1021000" />
+      <workItem from="1565593204795" duration="112000" />
+      <workItem from="1565597823789" duration="169000" />
+      <workItem from="1566590876997" duration="95000" />
+      <workItem from="1566660716254" duration="457000" />
+      <workItem from="1571760144211" duration="2000" />
+      <workItem from="1572258847820" duration="1637000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="89503000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.5332618" visible="true" weight="0.2793177" />
+      <window_info id="Structure" order="1" sideWeight="0.50083196" side_tool="true" weight="0.25" />
+      <window_info id="npm" order="2" sideWeight="0.4667382" side_tool="true" visible="true" weight="0.2793177" />
+      <window_info id="Favorites" order="3" sideWeight="0.50083196" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3286334" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.35193133" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32924107" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32924107" />
+      <window_info anchor="bottom" id="TypeScript" order="9" weight="0.3203125" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32725322" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Mongo Explorer" order="3" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/admin/user/UserCashFlow.tsx</url>
+          <line>186</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/admin/user/UserCashFlow.tsx</url>
+          <line>14</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/pages/admin/user/UserCommendList.tsx</url>
+          <line>406</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/store/index.ts</url>
+          <line>15</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/node_modules/antd/lib/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="24" column="36" lean-forward="true" selection-start-line="24" selection-start-column="36" selection-end-line="24" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/antd/lib/form/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="21" lean-forward="true" selection-start-column="21" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/antd/lib/grid/col.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="47">
+          <caret line="3" column="13" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/antd/lib/cascader/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="36" column="16" selection-start-line="36" selection-start-column="16" selection-end-line="36" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/setting/PriceRule.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="249" selection-start-line="249" selection-end-line="249" />
+          <folding>
+            <element signature="n#PriceRule#0" />
+            <element signature="e#441#686#0" />
+            <element signature="n#!!block;n#componentWillMount#0;n#PriceRule#0" />
+            <element signature="n#!!block;n#addRule#0;n#PriceRule#0" />
+            <element signature="n#!!block;n#renderRule#0;n#PriceRule#0" />
+            <element signature="n#!!block;n#submitForm#0;n#PriceRule#0" />
+            <element signature="n#!!block;n#Rules#0" />
+            <element signature="n#!!block;n#Rule#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/houseDecorationRange.ts">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/houseDoorLookTypeRanges.ts">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/houstTypeRange.ts">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/constants/houseElevatorTypeRange.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="423">
+          <caret line="9" selection-start-line="9" selection-end-line="12" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/constants/houseFloor.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="376">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/constants/tableConfig.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="27" selection-start-column="27" selection-end-column="27" />
+          <folding>
+            <element signature="n#!!block;n#tableConfig#0;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/houseOrientationRanges.ts">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/@types/react/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1426">
+          <caret line="396" column="10" selection-start-line="396" selection-start-column="10" selection-end-line="396" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/App.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="94">
+          <caret line="11" column="24" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#75#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/index.less">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="423">
+          <caret line="9" column="9" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/user/UserCashFlow.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="658">
+          <caret line="169" column="1" selection-start-line="169" selection-start-column="1" selection-end-line="169" selection-end-column="1" />
+          <folding>
+            <element signature="e#0#44#0" expanded="true" />
+            <element signature="e#463#507#0" />
+            <element signature="n#!!block;n#render#0;n#UserCashFlow#0" />
+            <element signature="n#!!block;n#componentWillMount#0;n#UserCashFlow#0" />
+            <element signature="n#!!block;n#getCashFlow#0;n#UserCashFlow#0" />
+            <element signature="n#!!block;n#ResponseCashFlow#0" />
+            <element signature="n#!!block;n#Data#0" />
+            <element signature="n#!!block;n#Record#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/store/reducers/admin/index.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="423">
+          <caret line="10" column="21" selection-start-line="10" selection-start-column="21" selection-end-line="10" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#83#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/user/UserHouseList.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-226">
+          <caret line="13" column="19" lean-forward="true" selection-start-line="13" selection-start-column="19" selection-end-line="13" selection-end-column="19" />
+          <folding>
+            <element signature="e#1373#1705#0" />
+            <element signature="e#1796#1985#0" />
+            <element signature="n#!!block;n#componentWillMount#0;n#UserHouseList#0" />
+            <element signature="e#2563#2599#0" />
+            <element signature="e#2852#8722#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/typescript/lib/lib.es5.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="392">
+          <caret line="1438" column="34" lean-forward="true" selection-start-line="1438" selection-start-column="34" selection-end-line="1438" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/setting/LocaleRule.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="620">
+          <caret line="393" column="4" selection-start-line="393" selection-start-column="4" selection-end-line="393" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#57#0" expanded="true" />
+            <element signature="e#718#916#0" />
+            <element signature="n#!!doc;n#renderTable#0;n#LocaleRule#0" />
+            <element signature="n#!!block;n#renderTable#0;n#LocaleRule#0" />
+            <element signature="n#!!doc;n#getDistrictList#0;n#LocaleRule#0" />
+            <element signature="n#!!block;n#getDistrictList#0;n#LocaleRule#0" />
+            <element signature="n#!!doc;n#handleDistrictChange#0;n#LocaleRule#0" />
+            <element signature="n#!!block;n#handleDistrictChange#0;n#LocaleRule#0" />
+            <element signature="n#!!doc;n#modalOk#0;n#LocaleRule#0" />
+            <element signature="n#!!block;n#modalOk#0;n#LocaleRule#0" />
+            <element signature="n#!!doc;n#modalCancel#0;n#LocaleRule#0" />
+            <element signature="n#!!block;n#modalCancel#0;n#LocaleRule#0" />
+            <element signature="n#!!doc;n#getList#0;n#LocaleRule#0" />
+            <element signature="n#!!block;n#getList#0;n#LocaleRule#0" />
+            <element signature="n#!!doc;n#deleteDistrict#0;n#LocaleRule#0" />
+            <element signature="n#!!block;n#deleteDistrict#0;n#LocaleRule#0" />
+            <element signature="n#!!doc;n#query#0;n#LocaleRule#0" />
+            <element signature="n#!!block;n#query#0;n#LocaleRule#0" />
+            <element signature="n#!!block;n#DistrictList#0" />
+            <element signature="n#!!block;n#Result#0" />
+            <element signature="n#!!block;n#LocationPoistion#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/axios/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="111" column="2" selection-start-line="111" selection-start-column="2" selection-end-line="111" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/setupProxy.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="376">
+          <caret line="11" column="12" lean-forward="true" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/http.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="4" column="23" selection-start-line="4" selection-start-column="15" selection-end-line="4" selection-end-column="23" />
+          <folding>
+            <element signature="n#!!block;n#BaseResponse#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/user/UserDetail.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="12" column="49" lean-forward="true" selection-start-line="12" selection-start-column="49" selection-end-line="12" selection-end-column="49" />
+          <folding>
+            <element signature="e#0#55#0" expanded="true" />
+            <element signature="n#UserDetail#0" />
+            <element signature="e#839#1136#0" />
+            <element signature="n#!!block;n#render#0;n#UserDetail#0" />
+            <element signature="n#!!block;n#componentDidUpdate#0;n#UserDetail#0" />
+            <element signature="n#!!block;n#componentWillMount#0;n#UserDetail#0" />
+            <element signature="n#!!block;n#renderInfo#0;n#UserDetail#0" />
+            <element signature="e#7885#8462#0" />
+            <element signature="e#8595#8771#0" />
+            <element signature="e#8842#9158#0" />
+            <element signature="e#9208#10156#0" />
+            <element signature="e#10186#11287#0" />
+            <element signature="e#11317#11827#0" />
+            <element signature="e#12542#16361#0" />
+            <element signature="n#!!block;n#searchParentList#0;n#UserDetail#0" />
+            <element signature="n#!!block;n#diffUserInfo#0;n#UserDetail#0" />
+            <element signature="n#!!block;n#changeUserInfo#0;n#UserDetail#0" />
+            <element signature="n#!!block;n#backOriginUserInfo#0;n#UserDetail#0" />
+            <element signature="n#!!block;n#saveUserInfo#0;n#UserDetail#0" />
+            <element signature="n#!!block;n#getUserInfo#0;n#UserDetail#0" />
+            <element signature="n#!!block;n#getHouseCount#0;n#UserDetail#0" />
+            <element signature="n#!!block;n#getUserPublishCount#0;n#UserDetail#0" />
+            <element signature="e#28052#28425#0" />
+            <element signature="e#28456#28561#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/welcome/index.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="778">
+          <caret line="109" column="29" lean-forward="true" selection-start-line="109" selection-start-column="29" selection-end-line="109" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#45#0" expanded="true" />
+            <element signature="e#297#359#0" />
+            <element signature="n#!!block;n#componentWillMount#0;n#Welcome#0" />
+            <element signature="n#!!block;n#render#0;n#Welcome#0" />
+            <element signature="n#!!block;n#getUserList#0;n#Welcome#0" />
+            <element signature="n#!!block;n#getHouseList#0;n#Welcome#0" />
+            <element signature="n#!!block;n#QueryDatas#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/constants/routes.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="449">
+          <caret line="25" column="32" selection-start-line="25" selection-start-column="32" selection-end-line="25" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/antd/lib/form/Form.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/constants/homeMenu.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="893">
+          <caret line="37" column="18" selection-start-line="37" selection-start-column="18" selection-end-line="37" selection-end-column="18" />
+          <folding>
+            <element signature="e#227#330#0" />
+            <element signature="e#336#457#0" />
+            <element signature="e#463#592#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/format.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="802">
+          <caret line="58" column="16" selection-start-line="58" selection-start-column="16" selection-end-line="58" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#46#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/LoginPage.less">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/user/UserCustomerList.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="611">
+          <caret line="25" column="48" lean-forward="true" selection-start-line="25" selection-start-column="48" selection-end-line="25" selection-end-column="48" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+            <element signature="e#895#7743#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/user/UserList.less">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/district.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="47">
+          <caret line="28" column="54" selection-start-line="28" selection-start-column="46" selection-end-line="28" selection-end-column="54" />
+          <folding>
+            <element signature="n#!!doc;n#getDistrictPage#0" />
+            <element signature="n#!!doc;n#districtSave#0" />
+            <element signature="n#!!doc;n#districtDelete#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/getHouseCallCount.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="141">
+          <caret line="6" column="34" selection-start-line="6" selection-start-column="34" selection-end-line="6" selection-end-column="34" />
+          <folding>
+            <element signature="n#!!doc;n#getHouseCallCount#0" />
+            <element signature="n#!!block;n#getHouseCallCount#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/getPageCode.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1786">
+          <caret line="40" selection-start-line="40" selection-end-line="51" selection-end-column="1" />
+          <folding>
+            <element signature="n#!!block;n#queryPageCode#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/getUserInfo.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="329">
+          <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#45#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/getUserList.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1034">
+          <caret line="37" column="11" selection-start-line="37" selection-start-column="4" selection-end-line="37" selection-end-column="11" />
+          <folding>
+            <element signature="n#!!block;n#QueryUserParams#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/getUserPublishCount.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/house/HouseDetail.less">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/user/UserList.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18377">
+          <caret line="415" column="27" selection-start-line="415" selection-start-column="27" selection-end-line="415" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+            <element signature="n#!!block;n#componentWillMount#0;n#UserList#0" />
+            <element signature="n#!!block;n#componentDidUpdate#0;n#UserList#0" />
+            <element signature="n#!!doc;n#getUserList#0;n#UserList#0" />
+            <element signature="n#!!doc;n#handleDistrictChange#0;n#UserList#0" />
+            <element signature="n#!!block;n#handleDistrictChange#0;n#UserList#0" />
+            <element signature="n#!!doc;n#getDistrictList#0;n#UserList#0" />
+            <element signature="n#!!block;n#getDistrictList#0;n#UserList#0" />
+            <element signature="n#!!block;n#DistrictList#0" />
+            <element signature="n#!!block;n#Result#0" />
+            <element signature="n#!!block;n#LocationPoistion#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/Index.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1833">
+          <caret line="260" column="80" selection-start-line="260" selection-start-column="80" selection-end-line="260" selection-end-column="80" />
+          <folding>
+            <element signature="e#0#44#0" expanded="true" />
+            <element signature="e#702#825#0" />
+            <element signature="n#!!block;n#componentWillMount#0;n#AdminIndex#0" />
+            <element signature="e#892#964#0" />
+            <element signature="e#1221#1732#0" />
+            <element signature="e#1937#11389#0" />
+            <element signature="e#3950#4501#0" />
+            <element signature="e#4544#11367#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/user/UserRuleList.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1175">
+          <caret line="137" selection-start-line="137" selection-end-line="137" />
+          <folding>
+            <element signature="e#0#43#0" expanded="true" />
+            <element signature="e#734#928#0" />
+            <element signature="n#!!block;n#componentWillMount#0;n#UserRuleList#0" />
+            <element signature="n#!!block;n#render#0;n#UserRuleList#0" />
+            <element signature="n#!!block;n#handleModalCancel#0;n#UserRuleList#0" />
+            <element signature="n#!!block;n#handleModalOk#0;n#UserRuleList#0" />
+            <element signature="e#6319#7360#0" />
+            <element signature="e#6333#6439#0" />
+            <element signature="e#6453#6642#0" />
+            <element signature="e#6656#6781#0" />
+            <element signature="e#6795#6978#0" />
+            <element signature="e#6992#7350#0" />
+            <element signature="e#7160#7318#0" />
+            <element signature="e#7391#9974#0" />
+            <element signature="n#!!block;n#getList#0;n#UserRuleList#0" />
+            <element signature="n#!!doc;n#getDistrictList#0;n#UserRuleList#0" />
+            <element signature="n#!!block;n#getDistrictList#0;n#UserRuleList#0" />
+            <element signature="n#!!block;n#deleteRegistration#0;n#UserRuleList#0" />
+            <element signature="n#!!block;n#DistrictList#0" />
+            <element signature="n#!!block;n#Result#0" />
+            <element signature="n#!!block;n#LocationPoistion#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/user/UserCommendList.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1833">
+          <caret line="49" column="6" selection-start-line="49" selection-start-column="6" selection-end-line="49" selection-end-column="6" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+            <element signature="e#552#784#0" />
+            <element signature="n#!!block;n#componentWillMount#0;n#UserCommendList#0" />
+            <element signature="n#!!block;n#getUserList#0;n#UserCommendList#0" />
+            <element signature="n#!!block;n#ResponseUserList#0" />
+            <element signature="n#!!block;n#Record#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/getHouseClickCount.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="282">
+          <caret line="6" column="59" selection-start-line="6" selection-start-column="59" selection-end-line="6" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/deleteUser.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="94">
+          <caret line="2" column="16" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/getHouseList.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="4" column="14" selection-start-line="4" selection-start-column="14" selection-end-line="4" selection-end-column="14" />
+          <folding>
+            <element signature="n#!!block;n#HouseInfo#0" />
+            <element signature="n#!!block;n#HouseInfoUser#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/getHouseInfo.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#45#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/apis/getHouseClickOrCallCount.ts">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/LoginPage.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="564">
+          <caret line="21" column="16" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
+          <folding>
+            <element signature="e#963#1048#0" />
+            <element signature="n#!!block;n#handleSubmit#0;n#LoginPage#0" />
+            <element signature="e#6173#6226#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://J:/homework/soft/Tools/quick_ma (1)">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="329">
+          <caret line="7" column="68" selection-start-column="4" selection-end-line="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/admin/service/List.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="318" column="12" selection-start-line="318" selection-start-column="12" selection-end-line="318" selection-end-column="12" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+            <element signature="e#492#638#0" />
+            <element signature="n#!!block;n#componentWillMount#0;n#ServiceList#0" />
+            <element signature="n#!!block;n#render#0;n#ServiceList#0" />
+            <element signature="e#2050#3740#0" />
+            <element signature="n#!!block;n#saveService#0;n#ServiceList#0" />
+            <element signature="e#15247#15270#0" />
+            <element signature="e#15359#15586#0" />
+            <element signature="n#!!block;n#ResponseData#0" />
+            <element signature="n#!!block;n#Data#0" />
+            <element signature="n#!!block;n#Datum#0" />
+            <element signature="n#!!block;n#Record#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ScopeChooserConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

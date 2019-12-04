@@ -1,17 +1,12 @@
 import React, { Component } from 'react'
-import { Location, History } from 'history';
+import {RouteComponentProps} from "react-router";
 
-type Prop = {
-    history: History;
-    location: Location;
-}
+type Props = OwnProps & RouteComponentProps;
+interface OwnProps {}
 type State = Readonly<{}>
-
-class NotFound extends Component<Prop, State> {
-
-    readonly state: State = {}
-
-    render() {
+class NotFound extends Component<Props, State> {
+    public readonly state: State = {};
+    public render() {
         return (
             <div style={{
                 width: '100%',
@@ -29,13 +24,11 @@ class NotFound extends Component<Prop, State> {
             </div>
         )
     }
-
-    componentDidMount() {
+    public componentDidMount() {
         setTimeout(() => {
             this.props.history.goBack()
         }, 2000);
     }
-
 }
 
 export default NotFound

@@ -34,8 +34,30 @@ export const homeMenu: HomeMenuItem[] = [
         id: 6,
         name: '用户管理',
         icon: 'user',
-        type: 1,
-        url: '/admin/user/list.html'
+        type: 0,
+        children: [
+            {
+                id: 8,
+                name: "房东管理",
+                icon: "user",
+                type: 1,
+                url: "/admin/user/1/list.html"
+            },
+            {
+                id: 9,
+                name: "中介管理",
+                icon: "user",
+                type: 1,
+                url: "/admin/user/2/list.html"
+            },
+            {
+                id: 10,
+                name: "推广管理",
+                icon: "user",
+                type: 1,
+                url: "/admin/user/3/list.html"
+            }
+        ]
     },
     {
         id: 7,
@@ -47,12 +69,19 @@ export const homeMenu: HomeMenuItem[] = [
             {
                 id: 8,
                 name: '收费规则设置',
-                icon: '',
+                icon: 'lock',
                 type: 1,
                 url: '/admin/setting/price-rule.html'
+            },
+            {
+                id: 9,
+                name: '地区管理',
+                icon: 'setting',
+                type: 1,
+                url: '/admin/setting/locale.html',
             }
         ]
     }
-]
+];
 
 export default homeMenu

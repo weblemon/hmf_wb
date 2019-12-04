@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-
 import './UserList.less';
 import { Breadcrumb, Table, notification, Avatar, Switch, Button, Row, Col, Input, Radio, Pagination } from 'antd';
 import {Link, RouteComponentProps} from 'react-router-dom';
@@ -8,8 +7,8 @@ import { ColumnProps } from 'antd/lib/table';
 import { formatTime } from '../../../utils/format';
 import { UserInfo } from '../../../utils/apis/getUserList';
 
+class UserCommendList extends Component<Props, State> {
 
-class UserCustomerList extends Component<Props, State> {
     public readonly state: State = {
         records: [],
         total: 0,
@@ -19,17 +18,17 @@ class UserCustomerList extends Component<Props, State> {
         loading: false,
         elementSize: "default",
         changeStateLoading: null,
-        changeIsNeedCheckLoading: null
-    }
+        changeIsNeedCheckLoading: null,
+    };
     public render() {
-        const { records } = this.state
+        const { records } = this.state;
         const columns:ColumnProps<UserInfo>[] = [
             {
                 title: 'ID',
                 dataIndex: 'id',
                 fixed: 'left',
                 width: 200,
-                render:(id) => {
+                render:(id: string) => {
                     return <Link to={`/admin/user/${id}.html`} target="_blank">{id}</Link>
                 }
             },
@@ -78,13 +77,13 @@ class UserCustomerList extends Component<Props, State> {
                 render: (type: number) => {
                     switch(type) {
                         case 0:
-                            return '未知'
+                            return '未知';
                         case 1:
-                            return '房东'
+                            return '房东';
                         case 2:
-                            return '中介'
+                            return '中介';
                         case 3:
-                            return '推广'
+                            return '推广';
                         default: 
                             return '系统出错'
                     }
@@ -140,25 +139,24 @@ class UserCustomerList extends Component<Props, State> {
                 width: 100,
                 fixed: 'right',
                 render: (record: UserInfo) => {
-                    record.balance
                     return <Switch
                         checked={record.state === 0}
                         loading={this.state.changeStateLoading === record.id}
                         onChange={(e) => {
                             this.setState({
                                 changeStateLoading: record.id
-                            })
+                            });
                             http.post('/users/update', {
                                 ...record,
                                 state: e ? 0 : 1
                             }).then((res) => {
                                 this.setState({
                                     changeStateLoading: null
-                                })
+                                });
                                 if (res.data.success) {
                                     this.getUserList()
                                 }
-                            }).catch(e => {
+                            }).catch(() => {
                                 this.setState({
                                     changeStateLoading: null
                                 })
@@ -179,18 +177,18 @@ class UserCustomerList extends Component<Props, State> {
                         onChange={(e) => {
                             this.setState({
                                 changeIsNeedCheckLoading: record.id
-                            })
+                            });
                             http.post('/users/update', {
                                 ...record,
                                 isNeedCheck: e ? 1 : 0
                             }).then((res) => {
                                 this.setState({
                                     changeIsNeedCheckLoading: null
-                                })
+                                });
                                 if (res.data.success) {
                                     this.getUserList()
                                 }
-                            }).catch(e => {
+                            }).catch(() => {
                                 this.setState({
                                     changeIsNeedCheckLoading: null
                                 })
@@ -211,6 +209,7 @@ class UserCustomerList extends Component<Props, State> {
                             target="_brank"
                         >
                             <Button
+                                htmlType="button"
                                 size="small"
                                 type="ghost"
                             >
@@ -220,7 +219,7 @@ class UserCustomerList extends Component<Props, State> {
                     )
                 }
             }
-        ]
+        ];
         const { elementSize } = this.state;
         return (
             <div className="admin-child-page">
@@ -232,9 +231,9 @@ class UserCustomerList extends Component<Props, State> {
                         <Link to={`/admin/user/list.html`}>用户管理</Link>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
-                        <Link to={`/admin/user/${this.props.match.params.id}.html`}>推广员{this.props.match.params.id}</Link>
+                        <Link to={`/admin/user/${this.props.match.params.id}.html`}>用户{this.props.match.params.id}</Link>
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item>客户列表</Breadcrumb.Item>
+                    <Breadcrumb.Item>推荐列表</Breadcrumb.Item>
                 </Breadcrumb>
                 
                 <div className="content">
@@ -242,8 +241,8 @@ class UserCustomerList extends Component<Props, State> {
                         <Row gutter={15} className="item">
                             <Col span={20}>
                                 <Radio.Group
-                                    onChange={(e) => {
-                                        const type = e.target.value
+                                    onChange={(e: any) => {
+                                        const type = e.target.value;
                                         if (type) {
                                             this.setState({
                                                 type: e.target.value
@@ -272,7 +271,7 @@ class UserCustomerList extends Component<Props, State> {
                                             this.getUserList()
                                         })
                                     }}
-                                    ref="serach"
+                                    ref="search"
                                     enterButton
                                     size={elementSize}
                                     allowClear
@@ -292,7 +291,7 @@ class UserCustomerList extends Component<Props, State> {
                                 <Radio.Group
                                     onChange={(e) => {
                                         this.setState({
-                                            gender: e.target.value
+                                            gender: (e.target as any).value
                                         }, () => this.getUserList())
                                     }}
                                     size={elementSize}
@@ -306,7 +305,7 @@ class UserCustomerList extends Component<Props, State> {
                         </Row>
                     </div>
                     <div className="pager">
-                        <div></div>
+                        <div />
                         <Pagination 
                             onChange={(current) => {
                                 this.setState({current}, () => {
@@ -377,7 +376,7 @@ class UserCustomerList extends Component<Props, State> {
         const params: any = {
             order: 'asc',
             current,
-            parentId: this.props.match.params.id,
+            recommendId: this.props.match.params.id,
             size
         };
         if (search) {
@@ -395,7 +394,7 @@ class UserCustomerList extends Component<Props, State> {
         }).then(res => {
             const { success, data, message } = res.data as BaseResponse<ResponseUserList>;
             if (success) {
-                const { records, pages, size, current, total } = data
+                const { records, pages, size, current, total } = data;
                 this.setState({
                     records: records.filter(item => item.userName !== 'admin'),
                     pages,
@@ -416,6 +415,7 @@ class UserCustomerList extends Component<Props, State> {
         })
     }
 }
+
 interface OwnProps {}
 type Props = OwnProps & RouteComponentProps<{id: string}>;
 type State = Readonly<{
@@ -432,7 +432,7 @@ type State = Readonly<{
     changeStateLoading: null | number;
     changeIsNeedCheckLoading: null | number;
 }>
-export default UserCustomerList
+export default UserCommendList
 export interface ResponseUserList {
   total: number;
   size: number;

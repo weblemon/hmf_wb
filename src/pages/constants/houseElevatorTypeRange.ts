@@ -29,6 +29,7 @@ const houseElevatorTypeEnum: Array<HouseElevator> = [
  * @returns { Number }
  */
 export function getHouseElevatorTypeId(name: string) {
+    if (!name) return 0;
     return (houseElevatorTypeEnum.find((item) => item.name === name) as HouseElevator).id;
 }
 
@@ -38,6 +39,7 @@ export function getHouseElevatorTypeId(name: string) {
  * @returns { String } 
  */
 export function getHouseElevatorTypeName(id: number) {
+    if (!id) return houseElevatorTypeEnum[0].name
     return (houseElevatorTypeEnum.find((item) => item.id === id) as HouseElevator).name;
 }
 

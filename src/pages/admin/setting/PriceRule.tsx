@@ -1,23 +1,12 @@
-import React, { FormEvent, Component } from 'react'
+import React, { FormEvent, PureComponent } from 'react'
 import '../common.less';
 import { Breadcrumb, Form, Input, Button, Icon, Tooltip, Modal, notification, message, InputNumber } from 'antd';
-import { Link } from 'react-router-dom';
+import {Link, RouteComponentProps} from 'react-router-dom';
 import http from '../../../utils/http';
-import { WrappedFormUtils } from 'antd/lib/form/Form';
+import {FormComponentProps } from 'antd/lib/form/Form';
 
-type Prop = {
-    form: WrappedFormUtils;
-    location: Location;
-    history: History;
-}
-
-type State = Readonly<{
-    result: Rules;
-}>
-
-class PriceRule extends Component<Prop, State> {
-
-    readonly state: State = {
+class PriceRule extends PureComponent<Props, State> {
+    public readonly state: State = {
         result: {
             probation: 10,
             probationNum: 10,
@@ -29,14 +18,87 @@ class PriceRule extends Component<Prop, State> {
                 }
             ]
         }
-    }
+    };
+    public render() {
+        const { result } = this.state;
+        const { getFieldDecorator } = this.props.form;
+        return (
+            <div className="admin-child-page">
+                <Breadcrumb className="breadcrumb">
+                    <Breadcrumb.Item>
+                        <Link to={'/admin/'}>首页</Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>系统管理</Breadcrumb.Item>
+                    <Breadcrumb.Item>收费规则设置</Breadcrumb.Item>
+                </Breadcrumb>
+                <div className="content">
+                    <div className="tools">
+                        <Button type="primary" onClick={this.addRule.bind(this)}><Icon type="plus" /> 添加收费规则</Button>
+                    </div>
+                    <Form
+                        className="form"
+                        onSubmit={this.submitForm.bind(this)}
+                    >
+                        {this.renderRule(result.rule)}
+                        <Form.Item
+                            label="试用期"
+                        >
+                            {
+                                getFieldDecorator('probation', {
+                                    rules: [
+                                        {
+                                            required: true, message: '请输入试用期天数!',
+                                        }
+                                    ],
+                                    initialValue: result.probation
+                                })(
+                                    <Input
+                                        style={{
+                                            width: 100
+                                        }}
+                                        maxLength={3}
+                                        addonAfter="天"
+                                    />
+                                )
+                            }
+                        </Form.Item>
+                        <Form.Item
+                            label="试用期能发布的条数"
+                        >
+                            {
+                                getFieldDecorator('probationNum', {
+                                    rules: [
+                                        {
+                                            required: true, message: '请输入试用期能发布的条数!',
+                                        }
+                                    ],
+                                    initialValue: result.probationNum
+                                })(
+                                    <Input
+                                        style={{
+                                            width: 100
+                                        }}
+                                        maxLength={3}
+                                        addonAfter="条"
+                                    />
+                                )
+                            }
+                        </Form.Item>
 
-    componentWillMount() {
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">保存</Button>
+                        </Form.Item>
+                    </Form>
+                </div>
+            </div>
+        )
+    }
+    public componentWillMount() {
         http.get('rule/queryRule').then((res) => {
-            const { data, success } = res.data
+            const { data, success } = res.data;
             if (data && data.rule) {
                 if (!data.rule) {}
-                data.rule = JSON.parse(data.rule.replace(/\\/g, ""))
+                data.rule = JSON.parse(data.rule.replace(/\\/g, ""));
                 if (success) {
                     this.setState({
                         result: data
@@ -45,22 +107,20 @@ class PriceRule extends Component<Prop, State> {
             }
         })
     }
-
-    public addRule() {
+    private addRule() {
         this.state.result.rule.push({
             min: '',
             max: '',
             tag: ''
-        })
+        });
         this.setState({
             result: {
                 ...this.state.result
             }
         })
     }
-
-    renderRule(rules: Rule[]) {
-        const { getFieldDecorator } = this.props.form
+    private renderRule(rules: Rule[]) {
+        const { getFieldDecorator } = this.props.form;
         if (Array.isArray(rules)) {
             return rules.map((item, index) => {
                 return (
@@ -151,12 +211,8 @@ class PriceRule extends Component<Prop, State> {
         }
         return '';
     }
-
-    validateData(result: Rules) {
-        
-    }
-
-    submitForm(e: FormEvent) {
+    private validateData(result: Rules) {}
+    private submitForm(e: FormEvent) {
         e.preventDefault();
         this.props.form.validateFields((e, v) => {
             if (!e) {
@@ -164,24 +220,24 @@ class PriceRule extends Component<Prop, State> {
                     if (!item.max) delete item.max;
                     if (!item.min) delete item.min;
                     if (!item.tag) delete item.tag;
-                })
+                });
                 const data = {
                     rule: JSON.stringify(this.state.result.rule).replace(/\"/g, '\\"'),
                     ...v
-                }
+                };
                 http.post('/rule/save', data).then(({data}) => {
                     const { success } = data
                     if (success) {
                         notification.success({
                             message: '成功',
                             description: '规则保存成功'
-                        })
+                        });
                         message.success('规则保存成功');
                     } else {
                         notification.error({
                             message: '失败',
                             description: '规则保存失败，请重试'
-                        })
+                        });
                         message.success('规则保存失败，请重试');
                     }
                 })    
@@ -189,88 +245,14 @@ class PriceRule extends Component<Prop, State> {
         })
 
     }
-
-    render() {
-        const { result } = this.state
-        const { getFieldDecorator } = this.props.form
-        return (
-            <div className="admin-child-page">
-                <Breadcrumb className="breadcrumb">
-                    <Breadcrumb.Item>
-                        <Link to={'/admin/'}>首页</Link>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>系统管理</Breadcrumb.Item>
-                    <Breadcrumb.Item>收费规则设置</Breadcrumb.Item>
-                </Breadcrumb>
-                <div className="content">
-                    <div className="tools">
-                        <Button type="primary" onClick={this.addRule.bind(this)}><Icon type="plus" /> 添加收费规则</Button>
-                    </div>
-                    <Form 
-                        className="form"
-                        onSubmit={this.submitForm.bind(this)}
-                    >
-                        {this.renderRule(result.rule)}
-                        <Form.Item
-                            label="试用期"
-                        >
-                            {
-                                getFieldDecorator('probation', {
-                                    rules: [
-                                        {
-                                            required: true, message: '请输入试用期天数!',
-                                        }
-                                    ],
-                                    initialValue: result.probation
-                                })(
-                                    <Input
-                                        style={{
-                                            width: 100
-                                        }}
-                                        maxLength={3}
-                                        addonAfter="天"
-                                    />
-                                )
-                            }
-                        </Form.Item>
-                        <Form.Item
-                            label="试用期能发布的条数"
-                        >
-                            {
-                                getFieldDecorator('probationNum', {
-                                    rules: [
-                                        {
-                                            required: true, message: '请输入试用期能发布的条数!',
-                                        }
-                                    ],
-                                    initialValue: result.probationNum
-                                })(
-                                    <Input
-                                        style={{
-                                            width: 100
-                                        }}
-                                        maxLength={3}
-                                        addonAfter="条"
-                                    />
-                                )
-                            }
-                        </Form.Item>
-
-                        <Form.Item>
-                           <Button type="primary" htmlType="submit">保存</Button>
-                        </Form.Item>
-                    </Form>
-                </div>
-            </div>
-        )
-    }
-
 }
+export default Form.create({ name: 'priceRule'})(PriceRule)
 
-export default Form.create({
-    name: 'priceRule'
-})(PriceRule)
-
+interface OwnProps {}
+type Props = OwnProps & FormComponentProps & RouteComponentProps;
+type State = Readonly<{
+    result: Rules;
+}>
 export interface Rules {
     // 规则
     rule: Rule[];
@@ -279,7 +261,6 @@ export interface Rules {
     // 试用期能发布的条数
     probationNum: number;
 }
-
 export interface Rule {
     min: number | string;
     max: number | string;

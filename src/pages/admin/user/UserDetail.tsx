@@ -1,41 +1,17 @@
 import React, { Component, CSSProperties } from 'react'
 import '../common.less'
-import { Breadcrumb, Row, Col, Avatar, Card, Switch, Input, Radio, Icon, Button, message, notification, Statistic, Select, Modal } from 'antd';
-import { Link } from 'react-router-dom';
-import { match } from 'react-router';
-import { Location, History } from 'history';
+import { Breadcrumb, Row, Col, Avatar, Card, Switch, Input, Button, notification, Statistic, Select, Modal } from 'antd';
+import {Link, RouteComponentProps} from 'react-router-dom'
 import http, { BaseResponse } from '../../../utils/http';
-import Meta from 'antd/lib/card/Meta';
 import RadioGroup from 'antd/lib/radio/group';
 import RadioButton from 'antd/lib/radio/radioButton';
 import { formatTime } from '../../../utils/format';
 import { AxiosResponse } from 'axios';
-import { userInfo } from 'os';
-
-type Prop = {
-    history: History;
-    location: Location;
-    match: match<{id: string}>;
-}
-
-type State = Readonly<{
-    userInfo?: ResponseUserInfo;
-    changed?: boolean;
-    originUserInfo?: ResponseUserInfo;
-    publishNumber: number;
-    downNumber: number;
-    arrearNumber: number;
-    collectionNumber: number;
-    browseNumber: number;
-    sysCloseNumber: number;
-    searchLoading: boolean;
-    search: string;
-    searchList: ResponseUserInfo[];
-}>
-
-class UserDetail extends Component<Prop, State> {
-
-    readonly state: State = {
+import { UserInfo, getUserList, QueryUserParams } from '../../../utils/apis/getUserList';
+import { getUserInfo } from '../../../utils/apis/getUserInfo';
+import { getHouseClickOrCallCount } from '../../../utils/apis/getHouseClickOrCallCount';
+class UserDetail extends Component<Props, State> {
+    public readonly state: State = {
         publishNumber: 0,
         downNumber: 0,
         arrearNumber: 0,
@@ -43,19 +19,49 @@ class UserDetail extends Component<Prop, State> {
         browseNumber: 0,
         sysCloseNumber: 0,
         searchLoading: false,
+        recommendNumber: 0,
         search: '',
-        searchList: []
-    }
+        searchList: [],
+        countList: [ 0, 0, 0, 0]
+    };
+    public render() {
+        return (
+            <div className="admin-child-page">
+                <Breadcrumb className="breadcrumb">
+                    <Breadcrumb.Item>
+                        <Link to={'/admin/'}>首页</Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <Link to={'/admin/user/list.html'}>用户管理</Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>查看详情</Breadcrumb.Item>
+                </Breadcrumb>
 
-    renderInfo(userInfo: ResponseUserInfo | undefined) {
+                <div className="content" style={{background: '#f1f1f1', padding: 0}}>
+                    <div className="user-info">
+                        {this.renderInfo(this.state.userInfo)}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+    public componentDidUpdate(nextProp: Props) {
+        if (this.props.match.params.id !== nextProp.match.params.id) {
+            this.getUserInfo();
+        }
+    }
+    public componentWillMount() {
+        this.getUserInfo()
+    }
+    private renderInfo(userInfo: UserInfo | undefined) {
         if (userInfo) {
             const gridStyle: CSSProperties = {
                 height: 100
-            }
-            const { changed, publishNumber, downNumber, arrearNumber, collectionNumber, browseNumber, sysCloseNumber } = this.state
+            };
+            const { changed, publishNumber, downNumber, arrearNumber, collectionNumber, recommendNumber, browseNumber, sysCloseNumber, countList } = this.state
             return (
                 <Row gutter={14}>
-                    <Col span={16}>
+                    <Col {...{xs: 24, sm: 24, md: 24, lg: 12 }}>
                         <Card
                             title={
                                 <div className="user">
@@ -156,7 +162,15 @@ class UserDetail extends Component<Prop, State> {
                             <Card.Grid style={gridStyle}>
                                 <Card.Meta
                                     title="所在地区"
-                                    description={userInfo.country + userInfo.province}
+                                    description={
+                                        userInfo.province
+                                        &&
+                                        userInfo.city
+                                        &&
+                                        userInfo.region
+                                        ? userInfo.province + userInfo.city + userInfo.region
+                                        : '暂无'
+                                    }
                                 />
                             </Card.Grid>
 
@@ -264,19 +278,19 @@ class UserDetail extends Component<Prop, State> {
                                                     loading={this.state.searchLoading}
                                                     style={{width: '100%'}}
                                                     filterOption={false}
-                                                    onSearch={(e) => {
+                                                    onSearch={(value: string | number) => {
                                                         const params: any = {};
-                                                        if (e) {
-                                                            params.search = e
+                                                        if (value) {
+                                                            params.search = value
                                                         }
                                                         this.searchParentList(params);
                                                     }}
-                                                    onChange={(e) => {
+                                                    onChange={(value: string | number) => {
                                                         this.setState({
-                                                            search: e as string
+                                                            search: value as string
                                                         })
                                                         this.changeUserInfo({
-                                                            parentId: e as number
+                                                            parentId: value as number
                                                         })
                                                     }}
                                                 >
@@ -294,10 +308,36 @@ class UserDetail extends Component<Prop, State> {
                                 )
                             }
 
-                            
+                            {
+                                userInfo.type === 3 ? (
+                                    <Card.Grid style={gridStyle}>
+                                        <Card.Meta
+                                            title="地区权限"
+                                            description={
+                                                <Link to={`/admin/user/${userInfo.id}/rule-list.html`}>查看授权</Link>
+                                            }
+                                        />
+                                    </Card.Grid>
+                                ) : null
+                            }
+
+                            <Card.Grid style={gridStyle}>
+                                <Card.Meta
+                                    title={
+                                        <span>所属推荐人</span>
+                                    }
+                                    description={
+                                        userInfo.recommendId ?
+                                        (
+                                            <Link to={`/admin/user/${userInfo.recommendId}.html`} >推荐人</Link>
+                                        ) :
+                                        '无'
+                                    }
+                                />
+                            </Card.Grid>
                         </Card>
                     </Col>
-                    <Col span={8}>
+                    <Col {...{xs: 24, sm: 24, md: 24, lg: 12 }}>
                         <Card
                             title="统计"
                         >
@@ -326,11 +366,33 @@ class UserDetail extends Component<Prop, State> {
                             </Card.Grid>
 
                             <Card.Grid>
+                                <Statistic title="所有访问总量" value={countList[0] || 0} suffix="条" />
+                            </Card.Grid>
+
+                            <Card.Grid>
+                                <Statistic title="今日访问总量" value={countList[1] || 0} suffix="条" />
+                            </Card.Grid>
+
+                            <Card.Grid>
+                                <Statistic title="所有电话总量" value={countList[2] || 0} suffix="条" />
+                            </Card.Grid>
+
+                            <Card.Grid>
+                                <Statistic title="今日电话总量" value={countList[3] || 0} suffix="条" />
+                            </Card.Grid>
+
+                            <Card.Grid>
                                 <Statistic title="已收藏" value={collectionNumber} suffix="条" />
                             </Card.Grid>
 
                             <Card.Grid>
                                 <Statistic title="已浏览" value={browseNumber} suffix="条" />
+                            </Card.Grid>
+
+                            <Card.Grid>
+                                <Link to={`/admin/user/${userInfo.id}/commend-list.html`}>
+                                    <Statistic title="推荐人数" value={recommendNumber} suffix="人" />
+                                </Link>
                             </Card.Grid>
                         </Card>
                     </Col>
@@ -338,14 +400,11 @@ class UserDetail extends Component<Prop, State> {
             )
         }
     }
-
-    searchParentList(params: any = {}) {
+    private searchParentList(params: QueryUserParams = {}) {
         this.setState({
             searchLoading: true
-        })
-        http.get('/users/queryUserPage', {
-            params
-        }).then((res: AxiosResponse<UserList>) => {
+        });
+        getUserList(params).then((res: AxiosResponse<UserList>) => {
             const { success, data } = res.data
             if (success) {
                 const { records } = data
@@ -360,22 +419,20 @@ class UserDetail extends Component<Prop, State> {
             }
         })
     }
-
-    diffUserInfo() {
-        let changed = false
-        const { userInfo, originUserInfo } = this.state
+    private diffUserInfo() {
+        let changed = false;
+        const { userInfo, originUserInfo } = this.state;
         if (userInfo && originUserInfo) {
             for(const item in userInfo) {
-                if (userInfo[item as keyof ResponseUserInfo] !== originUserInfo[item as keyof ResponseUserInfo]) {
-                    changed = true
+                if (userInfo[item as keyof UserInfo] !== originUserInfo[item as keyof UserInfo]) {
+                    changed = true;
                     break;
                 }
             }
         }
         this.setState({changed})
     }
-
-    changeUserInfo(userInfo: { [K in keyof ResponseUserInfo]?: ResponseUserInfo[K] }) {
+    private changeUserInfo(userInfo: { [K in keyof UserInfo]?: UserInfo[K] }) {
         if (userInfo.phone) {
             if (userInfo.phone.length > 11) {
                 userInfo.phone = (this.state.userInfo as any).phone
@@ -391,21 +448,19 @@ class UserDetail extends Component<Prop, State> {
         this.setState({
             userInfo: {
                 ...this.state.userInfo,
-                ...userInfo as ResponseUserInfo
+                ...userInfo as UserInfo
             }
         }, () => {
             this.diffUserInfo()
         })
     }
-
-    backOriginUserInfo() {
+    private backOriginUserInfo() {
         this.setState({
             userInfo: Object.assign({}, this.state.originUserInfo),
             changed: false
         })
     }
-
-    saveUserInfo() {
+    private saveUserInfo() {
         const { userInfo } = this.state
         if (userInfo && userInfo.phone && userInfo.phone.length !== 11) {
             return notification.error({
@@ -441,49 +496,16 @@ class UserDetail extends Component<Prop, State> {
             })
             
     }
-    
-    render() {
-        return (
-            <div className="admin-child-page">
-                <Breadcrumb className="breadcrumb">
-                    <Breadcrumb.Item>
-                        <Link to={'/admin/'}>首页</Link>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        <Link to={'/admin/user/list.html'}>用户管理</Link>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>查看详情</Breadcrumb.Item>
-                </Breadcrumb>
-                
-                <div className="content" style={{background: '#f1f1f1', padding: 0}}>
-                    <div className="user-info">
-                        {this.renderInfo(this.state.userInfo)}
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    componentWillMount() {
-        this.getUserInfo()
-    }
-
-    componentDidUpdate(nextProp: Prop) {
-        if (this.props.match.params.id !== nextProp.match.params.id) {
-            this.getUserInfo();
-        }
-    }
-
-    getUserInfo() {
-        http
-            .get(`/users/queryUser?id=${this.props.match.params.id}`)
+    private getUserInfo() {
+      getUserInfo(this.props.match.params.id)
             .then((res) => {
-                const data: ResponseUserInfo = res.data.data
+                const data = res.data.data
                 this.setState({
                     userInfo: data,
                     originUserInfo: JSON.parse(JSON.stringify(data))
                 }, () => {
                     this.getUserPublishCount()
+                    this.getHouseCount()
                     if (data.parentId) {
                         this.searchParentList({
                             type: 3,
@@ -493,8 +515,17 @@ class UserDetail extends Component<Prop, State> {
                 })
             })
     }
-
-    getUserPublishCount() {
+    private getHouseCount() {
+        const { userInfo } = this.state
+        if (userInfo) {
+            getHouseClickOrCallCount(userInfo.id).then(res => {
+                this.setState({
+                    countList: res.map(item => item.data.data)
+                })
+            }).catch(e => e)
+        }
+    }
+    private getUserPublishCount() {
         const { userInfo } = this.state
         if (userInfo) {
             Promise.all([
@@ -538,6 +569,10 @@ class UserDetail extends Component<Prop, State> {
                         size: 1
                     }
                 }),
+                getUserList({
+                    recommendId: userInfo.id,
+                    size: 0
+                })
             ]).then((results) => {
                 const result = results.map((item, index) => {
                     const { success, data } = item.data
@@ -549,49 +584,37 @@ class UserDetail extends Component<Prop, State> {
                     downNumber: result[2],
                     sysCloseNumber: result[3],
                     collectionNumber: result[4],
-                    browseNumber: result[5]
+                    browseNumber: result[5],
+                    recommendNumber: result[6]
                 })
             })
         }
     }
-
 }
-
 export default UserDetail
 
-interface ResponseUserInfo {
-  id: number;
-  deleted: boolean;
-  rawAddTime: string;
-  rawUpdateTime: string;
-  userName?: any;
-  password?: any;
-  openid: string;
-  wechatNumber?: any;
-  nickName: string;
-  region?: any;
-  phone: string;
-  sparePhone?: any;
-  realName: string;
-  gender: number;
-  type: number;
-  state: number;
-  avatarUrl: string;
-  city: string;
-  country: string;
-  language: string;
-  province: string;
-  balance: number;
-  isNeedCheck: number;
-  parentId?: number;
-  code?: any;
-  sms?: any;
-}
-
+interface OwnProps {}
+type Props = OwnProps & RouteComponentProps<{id: string}>;
+type State = Readonly<{
+    userInfo?: UserInfo;
+    changed?: boolean;
+    originUserInfo?: UserInfo;
+    recommendNumber: number;
+    publishNumber: number;
+    downNumber: number;
+    arrearNumber: number;
+    collectionNumber: number;
+    browseNumber: number;
+    sysCloseNumber: number;
+    searchLoading: boolean;
+    search: string;
+    searchList: UserInfo[];
+    countList: number[];
+}>
 type UserList = BaseResponse<{
     current: number;
     pages: number;
-    records: ResponseUserInfo[];
+    records: UserInfo[];
     size: number;
     total: number;
 }>

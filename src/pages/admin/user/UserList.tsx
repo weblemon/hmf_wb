@@ -1,26 +1,37 @@
 import React, { Component } from 'react'
 
 import './UserList.less';
-import { Breadcrumb, Table, notification, Avatar, Switch, Button, DatePicker, Row, Col, Input, Radio, Pagination, Icon, Cascader } from 'antd';
-import { Link } from 'react-router-dom';
-import http, { BaseResponse, qmap } from '../../../utils/http';
+import {
+    Breadcrumb,
+    Table,
+    notification,
+    Avatar,
+    Switch,
+    Button,
+    Row,
+    Col,
+    Input,
+    Radio,
+    Pagination,
+    Cascader,
+    Form, Modal
+} from 'antd';
+import {Link, RouteComponentProps} from 'react-router-dom';
+import http, { qmap } from '../../../utils/http';
 import { ColumnProps } from 'antd/lib/table';
-import { Location, History } from 'history';
-import Search from 'antd/lib/input/Search';
 import { formatTime } from '../../../utils/format';
 import { AxiosResponse } from 'axios';
+import { getUserList, QueryUserParams, UserInfo } from '../../../utils/apis/getUserList';
+import {deleteUser} from "../../../utils/apis/deleteUser";
 
-type Prop = {
-    location: Location;
-    history: History;
-}
-
+interface OwnProps {}
+type Props = OwnProps & RouteComponentProps<{type: string}>;
 type State = Readonly<{
     total: number;
     size: number;
     pages: number;
     current: number;
-    records: Record[];
+    records: UserInfo[];
     loading: boolean;
     elementSize: "small" | "default";
     type?: number | null;
@@ -31,9 +42,7 @@ type State = Readonly<{
     district: string[];
     districtOptions: Result[];
 }>
-
-class UserList extends Component<Prop, State> {
-
+class UserList extends Component<Props, State> {
     readonly state: State = {
         records: [],
         total: 0,
@@ -46,38 +55,58 @@ class UserList extends Component<Prop, State> {
         changeIsNeedCheckLoading: null,
         district:[],
         districtOptions: []
+    };
+    public componentWillMount() {
+        this.getUserList();
+        this.getDistrictList('', (list) => {
+            this.setState({
+                districtOptions: list
+            })
+        });
+    }
+    public componentDidUpdate(prevProps: Readonly<OwnProps & RouteComponentProps<{ type: string }>>, prevState: Readonly<Readonly<{ total: number; size: number; pages: number; current: number; records: UserInfo[]; loading: boolean; elementSize: "small" | "default"; type?: number | null; search?: string | null; gender?: number | "" | null; changeStateLoading: number | null; changeIsNeedCheckLoading: number | null; district: string[]; districtOptions: Result[] }>>, snapshot?: any): void {
+        if (prevProps.match.params.type !== this.props.match.params.type) {
+            this.getUserList();
+        }
     }
 
-    render() {
-        const { records } = this.state
-        const columns:ColumnProps<Record>[] = [
+    public render() {
+        const { records } = this.state;
+        const columns:ColumnProps<UserInfo>[] = [
             {
                 title: 'ID',
                 dataIndex: 'id',
+                fixed: 'left',
+                width: 200,
                 render:(id) => {
-                    return <Link to={`/admin/user/${id}.html`}>{id}</Link>
-                }
-            },
-            {
-                title: '头像',
-                align: 'center',
-                dataIndex: 'avatarUrl',
-                render: (avatarUrl: string) => {
-                    return <Avatar src={avatarUrl} icon="user" />
+                    return <Link to={`/admin/user/${id}.html`} target="_blank">{id}</Link>
                 }
             },
             {
                 title: '称呼',
+                fixed: 'left',
                 align: 'center',
+                width: 150,
                 dataIndex: 'realName',
             },
             {
+                title: '头像',
+                align: 'center',
+                width: 100,
+                dataIndex: 'avatarUrl',
+                render: (avatarUrl: string) => {
+                    return <Avatar src={avatarUrl} icon="user" />
+                }
+            },   
+            {
                 title: '手机',
                 align: 'center',
+                width: 150,
                 dataIndex: 'phone',
             },
             {
                 title: '备用手机',
+                width: 150,
                 align: 'center',
                 dataIndex: 'sparePhone'   
             },
@@ -85,6 +114,7 @@ class UserList extends Component<Prop, State> {
                 title: '性别',
                 align: 'center',
                 dataIndex: 'gender',
+                width: 100,
                 render: (gender: number) => {
                     return gender === 0 ? '女' : '男'
                 }
@@ -92,6 +122,7 @@ class UserList extends Component<Prop, State> {
             {
                 title: '类型',
                 align: 'center',
+                width: 100,
                 dataIndex: 'type',
                 render: (type: number) => {
                     switch(type) {
@@ -111,6 +142,7 @@ class UserList extends Component<Prop, State> {
             {
                 title: '注册日期',
                 align: 'center',
+                width: 200,
                 dataIndex: 'rawAddTime',
                 render: (rawAddTime: string) => {
                     return formatTime(rawAddTime)
@@ -119,6 +151,7 @@ class UserList extends Component<Prop, State> {
             {
                 title: '最近修改日期',
                 align: 'center',
+                width: 200,
                 dataIndex: 'rawUpdateTime',
                 render: (rawUpdateTime: string) => {
                     if (!rawUpdateTime) return '';
@@ -129,14 +162,32 @@ class UserList extends Component<Prop, State> {
                 title: '余额',
                 align: 'center',
                 dataIndex: 'balance',
+                width: 200,
                 render: (balance: number) => {
                     return (balance || 0) + '元'
                 }
             },
             {
+                title: '地区',
+                width: 300,
+                render: (data: UserInfo) => {
+                    if (data.province && data.city + data.region) {
+                        return (
+                            <span>
+                                {data.province + data.city + data.region}
+                            </span>
+                        )
+                    } else {
+                        return <span>暂无</span>
+                    }
+                }
+            },
+            {
                 title: '状态',
                 align: 'center',
-                render: (record: Record) => {
+                width: 100,
+                // fixed: 'right',
+                render: (record: UserInfo) => {
                     record.balance
                     return <Switch
                         checked={record.state === 0}
@@ -165,90 +216,96 @@ class UserList extends Component<Prop, State> {
                 }
             },
             {
-                title: '发布需要审核',
-                align: 'center',
-                render: (record: Record) => {
-                    return <Switch
-                        loading={this.state.changeIsNeedCheckLoading === record.id}
-                        checked={record.isNeedCheck !== 0}
-                        onChange={(e) => {
-                            this.setState({
-                                changeIsNeedCheckLoading: record.id
-                            })
-                            http.post('/users/update', {
-                                ...record,
-                                isNeedCheck: e ? 1 : 0
-                            }).then((res) => {
-                                this.setState({
-                                    changeIsNeedCheckLoading: null
-                                })
-                                if (res.data.success) {
-                                    this.getUserList()
-                                }
-                            }).catch(e => {
-                                this.setState({
-                                    changeIsNeedCheckLoading: null
-                                })
-                            })
-                        }}
-                    />
-                }
-            },
-            {
                 title: '操作',
                 align: 'center',
-                render: (record: Record) => {
+                width: 200,
+                // fixed: 'right',
+                render: (record: UserInfo) => {
                     return (
-                        <Button
-                            size="small"
-                            onClick={() => {
-                                this.props.history.push(`/admin/user/${record.id}.html`)
-                            }} 
-                            type="ghost"
-                        >
-                            查看
-                        </Button>
+                        <div>
+                            <Link
+                                to={`/admin/user/${record.id}.html`}
+                                target="_brank"
+                            >
+                                <Button
+                                    size="small"
+                                    type="ghost"
+                                >
+                                    查看
+                                </Button>
+                            </Link>
+                            <Button onClick={() => {
+                                Modal.confirm({
+                                    title: "警告",
+                                    content: `正在删除用户${record.realName || record.nickName || record.id},是否继续？`,
+                                    onOk: async () => {
+                                       const res = await deleteUser(record.id);
+                                       if (res.data.success) {
+                                           this.getUserList();
+                                       }
+                                    }
+                                })
+                            }} style={{marginLeft: 10}} size="small" type="danger">删除</Button>
+                        </div>
                     )
                 }
             }
-        ]
+        ];
         const { elementSize } = this.state;
+        const { type = 1 } = this.props.match.params;
         return (
             <div className="admin-child-page">
                 <Breadcrumb className="breadcrumb">
                     <Breadcrumb.Item>
                         <Link to={'/admin/'}>首页</Link>
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item>用户管理</Breadcrumb.Item>
+                    <Breadcrumb.Item>{type === "1" ? "房东管理": (type === "2" ? "中介管理" : "推广管理")}</Breadcrumb.Item>
                 </Breadcrumb>
-                
                 <div className="content">
                     <div className="top-bar">
-                        <Row gutter={15} className="item">
-                            <Col span={20}>
+                        <Form layout="inline">
+                            <Form.Item>
+                                <Cascader
+                                    placeholder={'搜索地区'}
+                                    style={{width: 250}}
+                                    loadData={(selectedOptions: any) => {
+                                        const targetOption = selectedOptions[selectedOptions.length - 1];
+                                        targetOption.loading = true;
+                                        this.getDistrictList(targetOption.id, (list) => {
+                                            if (list.length === 0) {
+                                                targetOption.isLeaf = true
+                                            } else {
+                                                targetOption.children = list;
+                                            }
+                                            targetOption.loading = false;
+
+                                            this.setState({
+                                                districtOptions: [...this.state.districtOptions]
+                                            });
+                                        })
+                                    }}
+                                    options={this.state.districtOptions}
+                                    fieldNames={{label: 'fullname', value: 'fullname', children: 'children' }}
+                                    onChange={this.handleDistrictChange.bind(this)}
+                                    changeOnSelect
+                                />
+                            </Form.Item>
+                            <Form.Item>
                                 <Radio.Group
                                     onChange={(e) => {
-                                        const type = e.target.value
-                                        if (type) {
-                                            this.setState({
-                                                type: e.target.value
-                                            }, () => this.getUserList())
-                                        } else {
-                                            this.setState({
-                                                type: null
-                                            }, () => this.getUserList())
-                                        }
+                                        this.setState({
+                                            gender: e.target.value
+                                        }, () => this.getUserList())
                                     }}
                                     size={elementSize}
-                                    defaultValue={0}
+                                    defaultValue={""}
                                 >
-                                    <Radio.Button value={0}>不限</Radio.Button>
-                                    <Radio.Button value={1}>房东</Radio.Button>
-                                    <Radio.Button value={2}>中介</Radio.Button>
-                                    <Radio.Button value={3}>推广</Radio.Button>
+                                    <Radio.Button value={""}>不限</Radio.Button>
+                                    <Radio.Button value={1}>男</Radio.Button>
+                                    <Radio.Button value={0}>女</Radio.Button>
                                 </Radio.Group>
-                            </Col>
-                            <Col span={4}>
+                            </Form.Item>
+                            <Form.Item>
                                 <Input.Search
                                     onSearch={(e) => {
                                         this.setState({
@@ -272,52 +329,11 @@ class UserList extends Component<Prop, State> {
                                     }}
                                     placeholder="输入id、昵称、或手机"
                                 />
-                            </Col>
-                            <Col span={20}>
-                                <Radio.Group
-                                    onChange={(e) => {
-                                        this.setState({
-                                            gender: e.target.value
-                                        }, () => this.getUserList())
-                                    }}
-                                    size={elementSize}
-                                    defaultValue={""}
-                                >
-                                    <Radio.Button value={""}>不限</Radio.Button>
-                                    <Radio.Button value={1}>男</Radio.Button>
-                                    <Radio.Button value={0}>女</Radio.Button>
-                                </Radio.Group>
-                            </Col>
-                            <Col span={20}>
-                                <Cascader
-                                    placeholder={'搜索地区'}
-                                    style={{width: 250}}
-                                    loadData={(selectedOptions: any) => {
-                                        const targetOption = selectedOptions[selectedOptions.length - 1];
-                                        targetOption.loading = true;
-                                        this.getDistrictList(targetOption.id, (list) => {
-                                            if (list.length === 0) {
-                                                targetOption.isLeaf = true
-                                            } else {
-                                                targetOption.children = list;
-                                            }
-                                            targetOption.loading = false;
-
-                                            this.setState({
-                                                districtOptions: [...this.state.districtOptions]
-                                            });
-                                        })
-                                    }}
-                                    options={this.state.districtOptions}
-                                    fieldNames={{label: 'fullname', value: 'fullname', children: 'children', key: 'id'}}
-                                    onChange={this.handleDistrictChange.bind(this)}
-                                    changeOnSelect
-                                />
-                            </Col>
-                        </Row>
+                            </Form.Item>
+                        </Form>
                     </div>
                     <div className="pager">
-                        <div></div>
+                        <div/>
                         <Pagination 
                             onChange={(current) => {
                                 this.setState({current}, () => {
@@ -339,7 +355,16 @@ class UserList extends Component<Prop, State> {
                             pageSizeOptions={['5', '10']}
                         />
                     </div>
-                    <Table bordered loading={this.state.loading} pagination={false} size="small" columns={columns as any} rowKey="id" dataSource={records}></Table>
+                    <Table
+                        bordered
+                        loading={this.state.loading}
+                        pagination={false}
+                        size="small"
+                        columns={columns as any}
+                        rowKey="id"
+                        dataSource={records}
+                        scroll={{x: 2060}}
+                    />
                     <div className="pager">
                         <div></div>
                         <Pagination 
@@ -367,26 +392,6 @@ class UserList extends Component<Prop, State> {
             </div>
         )
     }
-
-    private handleDistrictChange(e: string[], selectedOptions: any) {
-      if (Array.isArray(e) && e[0]) {
-        const start = e[0]
-        if (/北京|上海|重庆|天津|香港|澳门/.test(start)) {
-            this.setState({
-                district: [start, ...e]
-            }, () => {
-                this.getUserList()
-            })
-        } else {
-            this.setState({
-                district: [start, ...e]
-            }, () => {
-                this.getUserList()
-            })
-        }
-      }
-    }
-
     /**
      * 获取用户列表
      */
@@ -394,20 +399,20 @@ class UserList extends Component<Prop, State> {
         if (this.state.loading) return;
         this.setState({
             loading: true
-        })
-        const { size, search, gender, type, current, district } = this.state
-        const params: any = {
+        });
+        const { size, search, gender, type, current, district } = this.state;
+        const params: QueryUserParams = {
             order: 'asc',
             current,
             size
-        }
+        };
         if (search) {
-            params.search = search
+            params.search = search;
             params.current = 1
         }
 
         if (Array.isArray(district)) {
-            const [ province, city, region ] = district
+            const [ province, city, region ] = district;
             if (province) {
                 params.province = province
             }
@@ -423,13 +428,9 @@ class UserList extends Component<Prop, State> {
         if (gender !== '') {
             params.gender = gender
         }
-        if (type) {
-            params.type = type
-        }
-        http.get('/users/queryUserPage', {
-            params
-        }).then(res => {
-            const { success, data, message } = res.data as BaseResponse<ResponseUserList>
+        params.type = this.props.match.params.type;
+        getUserList(params).then(res => {
+            const { success, data, message } = res.data;
             if (success) {
                 const { records, pages, size, current, total } = data
                 this.setState({
@@ -443,7 +444,7 @@ class UserList extends Component<Prop, State> {
             } else {
                 this.setState({
                     loading: false
-                })
+                });
                 notification.error({
                     message: '提示',
                     description: message
@@ -451,16 +452,33 @@ class UserList extends Component<Prop, State> {
             }
         })
     }
-
-    public componentWillMount() {
-        this.getUserList();
-        this.getDistrictList('', (list) => {
+    /**
+     * 处理地区变化
+     * @param e
+     * @param selectedOptions
+     */
+    private handleDistrictChange(e: string[], selectedOptions: any) {
+      if (Array.isArray(e) && e[0]) {
+        const start = e[0];
+        if (/北京|上海|重庆|天津|香港|澳门/.test(start)) {
             this.setState({
-                districtOptions: list
+                district: [start, ...e]
+            }, () => {
+                this.getUserList()
             })
-        });
+        } else {
+            this.setState({
+                district: [start, ...e]
+            }, () => {
+                this.getUserList()
+            })
+        }
+      } else {
+          this.setState({
+              district: [],
+          }, () => this.getUserList());
+      }
     }
-
     /**
      * 获取行政地区
      */
@@ -488,45 +506,7 @@ class UserList extends Component<Prop, State> {
     }
 
 }
-
 export default UserList
-
-export interface ResponseUserList {
-  total: number;
-  size: number;
-  pages: number;
-  current: number;
-  records: Record[];
-}
-
-export interface Record {
-  id: number;
-  deleted: boolean;
-  rawAddTime: string;
-  rawUpdateTime?: string;
-  userName?: string;
-  password?: string;
-  openid?: string;
-  wechatNumber?: any;
-  nickName?: string;
-  region?: any;
-  phone?: string;
-  sparePhone?: string;
-  realName?: string;
-  gender: number;
-  type: number;
-  state: number;
-  avatarUrl?: string;
-  city?: string;
-  country?: string;
-  language?: string;
-  province?: string;
-  isNeedCheck: number;
-  balance: number;
-  code?: any;
-  sms?: any;
-}
-
 
 interface DistrictList {
   status: number;
@@ -534,7 +514,6 @@ interface DistrictList {
   data_version: string;
   result: Result[][];
 }
-
 interface Result {
   id: string;
   name: string;
@@ -544,7 +523,6 @@ interface Result {
   children: Result[];
   isLeaf: boolean;
 }
-
 interface LocationPoistion {
   lat: number;
   lng: number;

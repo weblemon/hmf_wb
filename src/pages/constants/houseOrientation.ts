@@ -40,19 +40,19 @@ const houseOrientationEnum: HouseOrientations = [
     },
     {
         id: 4,
-        name: HouseOrientationEnum[6]
+        name: HouseOrientationEnum[4]
     },
     {
         id: 5,
-        name: HouseOrientationEnum[7]
+        name: HouseOrientationEnum[5]
     },
     {
         id: 6,
-        name: HouseOrientationEnum[8]
+        name: HouseOrientationEnum[6]
     },
     {
         id: 7,
-        name: HouseOrientationEnum[9]
+        name: HouseOrientationEnum[7]
     },
 ]
 
@@ -62,6 +62,7 @@ const houseOrientationEnum: HouseOrientations = [
  * @returns { Number }
  */
 export function getHouseOrientationTypeId(name: string) {
+    if (!name) return 0;
     return (houseOrientationEnum.find((item) => item.name === name) as HouseOrientation).id
 }
 
@@ -71,6 +72,7 @@ export function getHouseOrientationTypeId(name: string) {
  * @returns { String }
  */
 export function getHouseOrientationTypeName(id: number) {
+    if (!id) return houseOrientationEnum[0].name
     return (houseOrientationEnum.find((item) => item.id === id) as HouseOrientation).name
 }
 

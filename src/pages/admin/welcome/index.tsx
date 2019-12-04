@@ -1,26 +1,18 @@
 import React, { PureComponent } from 'react';
-import { Breadcrumb, Row, Col } from 'antd';
+import { Breadcrumb } from 'antd';
 import { Link } from 'react-router-dom';
 import ReactEcharts  from 'echarts-for-react';
 import http from '../../../utils/http';
 
-type Prop = {
-    
-}
-
-type State = Readonly<{
-    userRegisterCount: number[];
-    houseUpList: number[];
-}>
-
-class Welcome extends PureComponent<Prop, State> {
-
-    readonly state: State = {
+class Welcome extends PureComponent<Props, State> {
+    public readonly state: State = {
         userRegisterCount: [],
         houseUpList: []
+    };
+    public componentWillMount() {
+        this.getUserCount()
     }
-
-    render() {
+    public render() {
         return (
             <div className="admin-child-page">
                 <Breadcrumb className="breadcrumb">
@@ -84,8 +76,7 @@ class Welcome extends PureComponent<Prop, State> {
             </div>
         )
     }
-
-    getUserList(params: QueryDatas) {
+    private getUserList(params: QueryDatas) {
         return http.get('/users/queryUserPage', {
             params: {
                 ...params,
@@ -93,8 +84,7 @@ class Welcome extends PureComponent<Prop, State> {
             }
         })
     }
-
-    getHouseList(params: QueryDatas) {
+    private getHouseList(params: QueryDatas) {
         return http.get('/housingResources/queryPageHouses', {
             params: {
                 ...params,
@@ -102,55 +92,52 @@ class Welcome extends PureComponent<Prop, State> {
             }
         })
     }
-
-    getUserCount() {
-        const now = new Date()
+    private getUserCount() {
+        const now = new Date();
         const oneDay = 1000 * 60 * 60 * 24;
-        const days = (now.getDay() - 1) * oneDay
-        const startDay = now.getTime() - days
+        const days = (now.getDay() - 1) * oneDay;
+        const startDay = now.getTime() - days;
         const times = [0, 1, 2, 3, 4, 5, 6].map((item) => {
-            const d = new Date(startDay + item * oneDay)
-            const m = d.getMonth()
-            const date = d.getDate()
-            
+            const d = new Date(startDay + item * oneDay);
+            const m = d.getMonth();
+            const date = d.getDate();
             return `${d.getFullYear()}-${m < 10 ? `0${m + 1}` : m}-${date < 10 ? `0${date}` : date}`;
-        })
+        });
 
-        Promise.all(times.map((k, index) => {
+        Promise.all(times.map((k) => {
             return this.getUserList({
                 startAddTime: k,
                 endAddTime: k
             })
         })).then((datas) => {
-            const userRegisterCount = datas.map((k) => k.data.data.total)
-            console.log(userRegisterCount)
+            const userRegisterCount = datas.map((k) => k.data.data.total);
             this.setState({
                 userRegisterCount
             })
-        })
+        });
 
-        Promise.all(times.map((k, index) => {
+        Promise.all(times.map((k) => {
             return this.getHouseList({
                 startAddTime: k,
                 auditStatus: 0,
                 endAddTime: k
             })
         })).then((datas) => {
-            const houseUpList = datas.map((k) => k.data.data.total)
+            const houseUpList = datas.map((k) => k.data.data.total);
             this.setState({
                 houseUpList
             })
         })
     }
-
-    componentWillMount() {
-        this.getUserCount()
-    }
-
 }
-
 export default Welcome
 
+type Props = OwnProps;
+interface OwnProps {}
+type State = Readonly<{
+    userRegisterCount: number[];
+    houseUpList: number[];
+}>
 export interface QueryDatas {
     startAddTime: string;
     endAddTime?: string;

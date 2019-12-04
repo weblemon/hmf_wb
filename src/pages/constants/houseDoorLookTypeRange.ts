@@ -31,6 +31,7 @@ const houseDoorLookType: HouseDoorLookTypes = [
  * 根据name索引id
  */
 export function getHouseDoorLookTypeId(name: string ) {
+    if (!name) return 0
     return (houseDoorLookType.find((item) => item.name === name) as HouseDoorLookType).id
 }
 
@@ -38,6 +39,7 @@ export function getHouseDoorLookTypeId(name: string ) {
  * 根据id索引name
  */
 export function getHouseDoorLookTypeName(id: number) {
+    if (!id) houseDoorLookType[0].name
     return (houseDoorLookType.find(item => item.id === id) as HouseDoorLookType).name;
 }
 

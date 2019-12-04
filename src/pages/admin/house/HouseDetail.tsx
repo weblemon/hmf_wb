@@ -1,37 +1,63 @@
 import React, { Component, CSSProperties } from 'react'
 import '../common.less'
 import './HouseDetail.less'
-import { Breadcrumb, Row, Col, Card, Statistic, Carousel, Button, Avatar, Input, Radio, Select, notification, Tooltip } from 'antd';
+import { Breadcrumb, Row, Col, Card, Statistic, Carousel, Button, Avatar, Input, Radio, Select, notification, Tooltip, Cascader } from 'antd';
 import { Link } from 'react-router-dom';
-import { match } from 'react-router';
-import { Location, History } from 'history';
+import { RouteComponentProps } from 'react-router';
 import http from '../../../utils/http';
-import { getHouseDecorationTypeName } from '../../constants/houseDecorationRange';
-import { getHouseOrientationTypeName } from '../../constants/houseOrientation';
-import { getHouseDoorLookTypeName } from '../../constants/houseDoorLookTypeRange';
-import { getHouseElevatorTypeName } from '../../constants/houseElevatorTypeRange';
+import { getHouseDecorationTypeId } from '../../constants/houseDecorationRange';
+import houseOrientation, { getHouseOrientationTypeId } from '../../constants/houseOrientation';
+import houseDoorLookTypeRange, { getHouseDoorLookTypeId } from '../../constants/houseDoorLookTypeRange';
+import houseElevatorTypeRange, { getHouseElevatorTypeId } from '../../constants/houseElevatorTypeRange';
 import { getHouseFloorTypeName } from '../../constants/houseFloor';
-import { getHousetTypeName } from '../../constants/houseTypeRange';
-import { getHouseingTypeName } from '../../constants/houseingTypeRange';
+import houseTypeEnum  from '../../constants/houseTypeRange';
+import houseingTypeRange, { getHouseingTypeId } from '../../constants/houseingTypeRange';
 import statusRange, { getHouseStatusTypeName, getHouseStatusTypeId } from '../../constants/houseStatus';
-import RadioButton from 'antd/lib/radio/radioButton';
 import { formatTime } from '../../../utils/format';
+import houseDecorationRange from '../../constants/houseDecorationRange';
+import { HouseInfo } from '../../../utils/apis/getHouseList';
+import { getHouseInfo } from '../../../utils/apis/getHouseInfo';
+import { getHouseClickCount } from '../../../utils/apis/getHouseClickCount';
+import { getHouseCallCount } from '../../../utils/apis/getHouseCallCount';
 
-type Prop = {
-    history: History;
-    location: Location;
-    match: match<{id: string}>;
-}
 
-type State = Readonly<{
-    houseInfo?: ResHouseData;
-}>
 
-class HouseDetail extends Component<Prop, State> {
+class HouseDetail extends Component<Props, State> {
 
-    readonly state: State = {}
+    public readonly state: State = {}
+    
+    public render() {
+        return (
+            <div className="admin-child-page">
+                <Breadcrumb className="breadcrumb">
+                    <Breadcrumb.Item>
+                        <Link to={'/admin/'}>首页</Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <Link to={'/admin/house/list.html'}>房源管理</Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>房源详情</Breadcrumb.Item>
+                </Breadcrumb>
+                
+                <div className="content" style={{
+                    background: '#f1f1f1',
+                    padding: 0,
+                    overflow: 'hidden',
+                    overflowY: 'auto'
+                }}>
+                    <div className="house-info">
+                        {this.renderInfo()}
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
-    renderInfo() {
+    public componentWillMount() {
+       this.getHouseInfo()
+    }
+
+    private renderInfo() {
         const { houseInfo } = this.state
         if (houseInfo) {
             const gridStyle: CSSProperties = {
@@ -50,40 +76,102 @@ class HouseDetail extends Component<Prop, State> {
                                         <Avatar src={houseInfo.user.avatarUrl} icon="user" />
                                     </Link>
                                 </Tooltip>
-                                
                             }
+                            actions={[
+                                <Button disabled={JSON.stringify(houseInfo) === JSON.stringify(this.state.originData)} onClick={() => this.setState({houseInfo: this.state.originData})} type="default">还原数据</Button>,
+                                <Button disabled={JSON.stringify(houseInfo) === JSON.stringify(this.state.originData)} type="primary" onClick={() => this.update()}>保存修改</Button>
+                            ]}
                         >
 
                             <Card.Grid
-                                 style={gridStyle}
+                                style={gridStyle}
                             >
                                 <Statistic 
-                                    style={gridStyle}
-                                    title="价格"
-                                    value={houseInfo.price || 0}
-                                    suffix="万"
+                                    title="点击量"
+                                    value={houseInfo.clickSum ? houseInfo.clickSum : 0}
+                                    suffix="次"
+                                />
+                            </Card.Grid>
+
+                            <Card.Grid
+                                style={gridStyle}
+                            >
+                                <Statistic 
+                                    title="电话拨打数量"
+                                    value={houseInfo.callSum ? houseInfo.callSum : 0}
+                                    suffix="次"
                                 />
                             </Card.Grid>
 
                             <Card.Grid
                                  style={gridStyle}
                             >
-                                <Statistic 
+                                <Card.Meta
+                                    title="价格"
+                                    style={gridStyle}
+                                    description={
+                                        <Input
+                                            value={houseInfo.price || 0}
+                                            suffix="万"
+                                            onChange={(e) => {
+                                                this.updateHouse({
+                                                    price: Number(e.target.value)
+                                                })
+                                            }}
+                                        />
+                                    }
+                                />
+                            </Card.Grid>
+
+                            <Card.Grid
+                                 style={gridStyle}
+                            >
+                                {/* <Statistic 
                                     style={gridStyle}
                                     title="面积"
                                     value={houseInfo.houseArea || 0}
                                     suffix="m²"
+                                /> */}
+                                <Card.Meta
+                                    title="面积"
+                                    style={gridStyle}
+                                    description={
+                                        <Input
+                                            value={houseInfo.houseArea || 0}
+                                            suffix="m²"
+                                            onChange={(e) => {
+                                                this.updateHouse({
+                                                    houseArea: Number(e.target.value)
+                                                })
+                                            }}
+                                        />
+                                    }
                                 />
                             </Card.Grid>
 
                             <Card.Grid
                                  style={gridStyle}
                             >
-                                <Statistic 
+                                {/* <Statistic 
                                     style={gridStyle}
                                     title="赠送面积"
                                     value={houseInfo.houseAreaPlus || 0}
                                     suffix="m²"
+                                /> */}
+                                <Card.Meta
+                                    title="赠送面积"
+                                    style={gridStyle}
+                                    description={
+                                        <Input
+                                            value={houseInfo.houseAreaPlus || 0}
+                                            suffix="m²"
+                                            onChange={(e) => {
+                                                this.updateHouse({
+                                                    houseAreaPlus: Number(e.target.value)
+                                                })
+                                            }}
+                                        />
+                                    }
                                 />
                             </Card.Grid>
 
@@ -101,7 +189,25 @@ class HouseDetail extends Component<Prop, State> {
                             >
                                 <Card.Meta
                                     title="装修"
-                                    description={getHouseDecorationTypeName(houseInfo.houseDecoration)}
+                                    description={
+                                        <Select
+                                            style={{
+                                                width: '100%'
+                                            }}
+                                            value={houseInfo.houseDecoration}
+                                            onChange={(value: number) => {
+                                                this.updateHouse({
+                                                    houseDecoration: value
+                                                })
+                                            }}
+                                        >
+                                            {
+                                                houseDecorationRange.map((item, index) => {
+                                                    return <Select.Option key={index} value={getHouseDecorationTypeId(item)}>{item}</Select.Option>
+                                                })
+                                            }
+                                        </Select>
+                                    }
                                 />
                             </Card.Grid>
 
@@ -110,7 +216,25 @@ class HouseDetail extends Component<Prop, State> {
                             >
                                 <Card.Meta
                                     title="朝向"
-                                    description={getHouseOrientationTypeName(houseInfo.houseOrientation)}
+                                    description={
+                                        <Select
+                                            style={{
+                                                width: '100%'
+                                            }}
+                                            value={houseInfo.houseOrientation}
+                                            onChange={(value: number) => {
+                                                this.updateHouse({
+                                                    houseOrientation: value
+                                                })
+                                            }}
+                                        >
+                                            {
+                                                houseOrientation.map((item, index) => {
+                                                    return <Select.Option key={index} value={getHouseOrientationTypeId(item)}>{item}</Select.Option>
+                                                })
+                                            }
+                                        </Select>
+                                    }
                                 />
                             </Card.Grid>
 
@@ -119,7 +243,25 @@ class HouseDetail extends Component<Prop, State> {
                             >
                                 <Card.Meta
                                     title="钥匙"
-                                    description={getHouseDoorLookTypeName(houseInfo.houseDoorLookType)}
+                                    description={
+                                        <Select
+                                            style={{
+                                                width: '100%'
+                                            }}
+                                            value={houseInfo.houseDoorLookType}
+                                            onChange={(value: number) => {
+                                                this.updateHouse({
+                                                    houseDoorLookType: value
+                                                })
+                                            }}
+                                        >
+                                            {
+                                                houseDoorLookTypeRange.map((item, index) => {
+                                                    return <Select.Option key={index} value={getHouseDoorLookTypeId(item)}>{item}</Select.Option>
+                                                })
+                                            }
+                                        </Select>
+                                    }
                                 />
                             </Card.Grid>
 
@@ -128,7 +270,25 @@ class HouseDetail extends Component<Prop, State> {
                             >
                                 <Card.Meta
                                     title="电梯"
-                                    description={getHouseElevatorTypeName(houseInfo.houseElevator)}
+                                    description={
+                                        <Select
+                                            style={{
+                                                width: '100%'
+                                            }}
+                                            value={houseInfo.houseElevator}
+                                            onChange={(value: number) => {
+                                                this.updateHouse({
+                                                    houseElevator: value
+                                                })
+                                            }}
+                                        >
+                                            {
+                                                houseElevatorTypeRange.map((item, index) => {
+                                                    return <Select.Option key={index} value={getHouseElevatorTypeId(item)}>{item}</Select.Option>
+                                                })
+                                            }
+                                        </Select>
+                                    }
                                 />
                             </Card.Grid>
 
@@ -146,7 +306,40 @@ class HouseDetail extends Component<Prop, State> {
                             >
                                 <Card.Meta
                                     title="户型"
-                                    description={getHousetTypeName(houseInfo.houseType)}
+                                    description={
+                                        <Cascader
+                                            value={typeof houseInfo.houseType === 'string' ? houseInfo.houseType.split(',') : houseInfo.houseType}
+                                            onChange={(e) => {
+                                                this.updateHouse({
+                                                    houseType: e as any
+                                                })
+                                            }}
+                                            style={{
+                                                width: '100%'
+                                            }}
+                                            options={
+                                                houseTypeEnum[0].map((item, index) => {
+                                                    return {
+                                                        value: String(index),
+                                                        label: item,
+                                                        children: houseTypeEnum[1].map((iitem, iindex) => {
+                                                            return {
+                                                                value: String(iindex),
+                                                                label: iitem,
+                                                                children:  houseTypeEnum[2].map((iiitem, iiindex) => {
+                                                                    return {
+                                                                        value: String(iiindex),
+                                                                        label: iiitem,
+                                                                    }
+                                                                })
+                                                            }
+                                                        })
+                                                    }
+                                                })
+                                            }
+                                            placeholder='选择户型' 
+                                        />
+                                    }
                                 />
                             </Card.Grid>
                             
@@ -155,7 +348,25 @@ class HouseDetail extends Component<Prop, State> {
                             >
                                 <Card.Meta
                                     title="类型"
-                                    description={houseInfo.housingType ? getHouseingTypeName(houseInfo.housingType) : ''}
+                                    description={
+                                        <Select
+                                        style={{
+                                            width: '100%'
+                                        }}
+                                        value={houseInfo.housingType}
+                                        onChange={(value: number) => {
+                                            this.updateHouse({
+                                                housingType: value
+                                            })
+                                        }}
+                                        >
+                                           {
+                                                houseingTypeRange.map((item, index) => {
+                                                    return <Select.Option key={index} value={getHouseingTypeId(item)}>{item}</Select.Option>
+                                                })
+                                            }
+                                        </Select>
+                                    }
                                 />
                             </Card.Grid>
 
@@ -185,30 +396,9 @@ class HouseDetail extends Component<Prop, State> {
                                     description={
                                         <Select
                                             style={{width: '100%'}}
-                                            onChange={(e) => {
-                                                http.post('/housingResources/save', {
-                                                    id: houseInfo.id,
-                                                    auditStatus: e
-                                                })
-                                                .then((res) => {
-                                                    const { data, success, message } = res.data
-                                                    if (success) {
-                                                        this.setState({
-                                                            houseInfo: {
-                                                                ...houseInfo,
-                                                                auditStatus: e
-                                                            }
-                                                        })
-                                                        notification.success({
-                                                            message: '提示',
-                                                            description: '状态修改成功'
-                                                        })
-                                                    } else {
-                                                        notification.error({
-                                                            message: '错误',
-                                                            description: message
-                                                        })
-                                                    }
+                                            onChange={(value: string) => {
+                                                this.updateHouse({
+                                                    auditStatus: value
                                                 })
                                             }}
                                             value={getHouseStatusTypeName(Number(houseInfo.auditStatus))}>
@@ -299,44 +489,85 @@ class HouseDetail extends Component<Prop, State> {
         return '';
     }
 
-    render() {
-        return (
-            <div className="admin-child-page">
-                <Breadcrumb className="breadcrumb">
-                    <Breadcrumb.Item>
-                        <Link to={'/admin/'}>首页</Link>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        <Link to={'/admin/house/list.html'}>房源管理</Link>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>房源详情</Breadcrumb.Item>
-                </Breadcrumb>
-                
-                <div className="content" style={{
-                    background: '#f1f1f1',
-                    padding: 0,
-                    overflow: 'hidden'
-                }}>
-                    <div className="house-info">
-                        {this.renderInfo()}
-                    </div>
-                </div>
-            </div>
-        )
+    private update() {
+        const houseInfo = this.state.houseInfo;
+        if (!houseInfo) return;
+        http.post('/housingResources/save', {
+            id: houseInfo.id,
+            ...this.state.changeData
+        })
+        .then((res) => {
+            const { data, success, message } = res.data
+            if (success) {
+                this.setState({
+                    originData: JSON.parse(JSON.stringify(this.state.houseInfo)),
+                    changeData: {}
+                })
+                notification.success({
+                    message: '提示',
+                    description: '修改成功'
+                })
+            } else {
+                notification.error({
+                    message: '提示',
+                    description: message
+                })
+            }
+        })
     }
 
-    componentWillMount() {
-       this.getHouseInfo()
+    private updateHouse(house: { [K in keyof HouseInfo]?: HouseInfo[K] }) {
+        const houseInfo = this.state.houseInfo;
+        if (!houseInfo) return;
+        const data = {
+            ...houseInfo,
+            ...house
+        }
+        this.setState({
+            houseInfo: data,
+            changeData: {
+                ...this.state.changeData,
+                ...house
+            }
+        })
     }
 
-    getHouseInfo() {
-       http
-        .get(`/housingResources/queryHousingResources?id=${this.props.match.params.id}`)
-        .then(res => {
+    private getHouseInfo() {
+        getHouseInfo(this.props.match.params.id).then(res => {
             const { success, data } = res.data
             if (success) {
                 this.setState({
-                    houseInfo: data
+                    houseInfo: data,
+                    originData: JSON.parse(JSON.stringify(data))
+                }, () => {
+                    this.getHouseCallCount()
+                    this.getHouseClickCount()
+                })
+            }
+        })
+    }
+
+    private getHouseClickCount() {
+        getHouseClickCount(this.props.match.params.id).then(res => {
+            if (this.state.houseInfo) {
+                this.setState({
+                    houseInfo: {
+                        ...this.state.houseInfo,
+                        clickSum: res.data.data
+                    }
+                })
+            }
+        })
+    }
+
+    private getHouseCallCount() {
+        getHouseCallCount(this.props.match.params.id).then(res => {
+            if (this.state.houseInfo) {
+                this.setState({
+                    houseInfo: {
+                        ...this.state.houseInfo,
+                        callSum: res.data.data
+                    }
                 })
             }
         })
@@ -344,55 +575,13 @@ class HouseDetail extends Component<Prop, State> {
 
 }
 
-export default HouseDetail
+export default HouseDetail;
 
-interface ResHouseData {
-  id: number;
-  deleted: boolean;
-  rawAddTime: string;
-  rawUpdateTime?: any;
-  houseTitle: string;
-  houseArea: number;
-  houseAreaPlus: number;
-  houseType: string;
-  houseOrientation: number;
-  price: number;
-  houseDoorLookType: number;
-  houseDecoration: number;
-  houseElevator: number;
-  housingType: number;
-  houseFloor: string;
-  auditStatus: string;
-  housePhotos: string;
-  houseRemarks?: any;
-  province: string;
-  city: string;
-  area: string;
-  detailedAddress: string;
-  houseLocation: HouseLocation;
-  user: User;
-  isCollect?: any;
-  releaseId: number;
-}
 
-interface User {
-  id: number;
-  nickName: string;
-  realName: string;
-  phone: string;
-  sparePhone?: any;
-  avatarUrl: string;
-  gender: number;
-}
-
-interface HouseLocation {
-  id: number;
-  deleted: boolean;
-  rawAddTime?: any;
-  rawUpdateTime?: any;
-  houssId?: any;
-  name: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-}
+interface OwnProps {}
+type Props = OwnProps & RouteComponentProps<{id: string}>;
+type State = Readonly<{
+    houseInfo?: HouseInfo & { clickSum?: number, callSum?: number };
+    originData?: HouseInfo;
+    changeData?: { [K in keyof HouseInfo]?: HouseInfo[K] };
+}>

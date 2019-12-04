@@ -37,6 +37,7 @@ const houseingTypeEnum: HouseingType[] = [
  * 根据名称返回房屋类型 id
  */
 export function getHouseingTypeId(name: string) {
+    if (!name) return 0;
     return(houseingTypeEnum.find((item) => item.name === name) as HouseingType).id;
 }
 
@@ -44,6 +45,7 @@ export function getHouseingTypeId(name: string) {
  * 根据id返回房屋类型名称
  */
 export function getHouseingTypeName(id: number) {
+    if (!id) return houseingTypeEnum[0].name;
     return (houseingTypeEnum.find((item) => item.id === id) as HouseingType).name;
 }
 

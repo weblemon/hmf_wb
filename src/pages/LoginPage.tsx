@@ -1,35 +1,23 @@
-import React, { Component, FormEvent } from 'react';
-import { Layout, Form, Input, Button, notification, Spin } from 'antd';
-import { Location, History } from 'history';
-import { connect } from 'react-redux';
-
-import { WrappedFormUtils } from 'antd/lib/form/Form';
-import { UserState, UserInfo } from '../store/reducers/user';
-import { SetUserAction, SetAuthorizationAction, AdminActionTypes } from '../store/reducers/user/action';
-
+import React, { PureComponent, FormEvent } from 'react';
+import {Layout, Form, Input, Button, Spin, notification} from 'antd';
+import {FormComponentProps} from 'antd/lib/form/Form';
 import Background from '../components/Background';
-
 import './LoginPage.less';
-import http, { BaseResponse } from '../utils/http';
-interface IProps  {
-    form: WrappedFormUtils;
-    location: Location;
-    history: History;
-    setUser: (userInfo: UserInfo) => void;
-    setAuthorization: (authorization: string) => void;
-    loading: boolean;
-}
+import {RouteComponentProps} from "react-router";
+import {IStore} from "../store";
+import {adminUserLoginAction, AdminUserLoginResponse} from "../store/actions/admin/AdminUserAction";
+import {connect} from "react-redux";
+import {AxiosResponse} from "axios";
 
-class LoginPage extends Component<IProps, any> {
-
-    readonly state = {
+class LoginPage extends PureComponent<Props, State> {
+    public readonly state: State = {
         spinning: false,
         loading: false,
         tms: new Date().getTime(),
-        username: ''
-    }
-
-    render() {
+        username: '',
+        token: process.env.NODE_ENV === 'development' ? 'admin' : 'HousingManagement'
+    };
+    public render() {
         const { getFieldDecorator } = this.props.form;
         return (
             <Layout className='page login'>
@@ -119,7 +107,7 @@ class LoginPage extends Component<IProps, any> {
                                         )
                                     }
                                     <Spin spinning={this.state.spinning}>
-                                        <img onClick={(e) => this.setState({spinning: true, tms: e.timeStamp})} onLoad={() => this.setState({spinning: false})} style={{height: 32}} src={`/proxyapi/util/validateCode?userName=HousingManagement&tms=` + this.state.tms} />
+                                        <img onClick={(e) => this.setState({spinning: true, tms: e.timeStamp})} onLoad={() => this.setState({spinning: false})} style={{height: 32}} src={`/proxyapi/util/validateCode?userName=${this.state.token}&tms=` + this.state.tms} />
                                     </Spin>
                                 </div>
                             </Form.Item>
@@ -139,66 +127,58 @@ class LoginPage extends Component<IProps, any> {
             </Layout>
         )
     }
-
-    handleSubmit(e: FormEvent) {
-        e.persist()
-        e.preventDefault()
+    public handleSubmit(e: FormEvent) {
+        e.persist();
+        e.preventDefault();
         if (this.state.loading) return;
-        this.props.form.validateFields((errors, value) => {
+        this.props.form.validateFields((errors: any, value: any) => {
             if (!errors) {
-                this.state.loading = true;
-                http.post('/login', value).then(res => {
-                    const { code, success, data, message } = res.data as BaseResponse<{ Authorization: string; userIfo: UserInfo }>
-                    if (success) {
-                        this.props.setUser(data.userIfo);
-                        this.props.setAuthorization(data.Authorization);
-                        this.props.history.replace('admin');
-                    } else {
-                        notification.error({
-                            message: '登陆失败',
-                            description: message
-                        })
-                        this.setState({
-                            tms: Math.random()
-                        })
-                    }
-                    this.state.loading = false
-                }).catch(err => {
-                    notification.error({
-                        message: '错误',
-                        description: '登陆失败，请重试。'
-                    })
-                    this.setState({
-                        tms: Math.random()
-                    })
-                    this.state.loading = false
-                })
+                this.setState({
+                    loading: true
+                });
+               const response: Promise<AxiosResponse<AdminUserLoginResponse>> = this.props.login(value) as any;
+               response.then(result => {
+                   const { success, message } = result.data;
+                   if (success) {
+                       this.props.history.push('/admin/');
+                   } else {
+                       notification.error({
+                           message: '提示',
+                           description: message
+                       });
+                       this.setState({
+                           tms: new Date().getTime()
+                       })
+                   }
+                   this.setState({
+                       loading: false
+                   })
+               })
             }
         })
     }
 }
+const mapStateToProps = (state: IStore) => {
+    return {
+        user: state.admin.user,
+        token: state.admin.Authorization,
+    };
+};
+const mapDispatchToProps = {
+    login: adminUserLoginAction
+};
+export default connect(mapStateToProps, mapDispatchToProps)(
+    Form.create({ name: 'LoginForm'})(
+        LoginPage
+    )
+)
 
-export default Form.create({name: 'login'})(
-    connect(
-        (state: UserState) => ({
-            user: state.user
-        }),
-        (dispatch) => ({
-            setUser(user: UserInfo) {
-                const action: SetUserAction  = {
-                    type: AdminActionTypes.SET_ADMIN_USER,
-                    user
-                }
-                dispatch(action)
-            },
-            setAuthorization(Authorization: string) {
-                const action: SetAuthorizationAction = {
-                    type: AdminActionTypes.SET_AUTHORIZATION,
-                    Authorization
-                }
-                sessionStorage.setItem('authorization', Authorization);
-                dispatch(action)
-            }
-        })
-    )(LoginPage)
-);
+interface OwnProps {}
+type Props = OwnProps & FormComponentProps & RouteComponentProps & ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+type State = Readonly<{
+    spinning: boolean;
+    loading: boolean;
+    tms: any;
+    username: string;
+    token: string;
+}>;

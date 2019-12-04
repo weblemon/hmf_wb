@@ -1,41 +1,19 @@
 import React, { PureComponent } from 'react'
 import { Breadcrumb, Card, Avatar, Table, Pagination } from 'antd';
-import { Link } from 'react-router-dom';
+import {Link, RouteComponentProps} from 'react-router-dom';
 import Meta from 'antd/lib/card/Meta';
-import { match } from 'react-router';
-import { Location, History } from 'history';
 import Qs from 'qs'
 import http from '../../../utils/http';
 import { ColumnProps } from 'antd/lib/table';
-import { formatHouseTime, formatTime } from '../../../utils/format';
+import { formatTime } from '../../../utils/format';
 
-type Prop = {
-    location: Location;
-    history: History;
-    match: match<{id: string}>;
-}
-
-type State = Readonly<{
-    avatarUrl?: string;
-    nickName?: string;
-    auditStatus?: string | number;
-    id?: string | number;
-    current?: number;
-    total?: number;
-    size?: number;
-    records?: Record[];
-    loading?: boolean;
-}>
-
-class UserCashFlow extends PureComponent<Prop, State> {
-
-    readonly state: State = {
+class UserCashFlow extends PureComponent<Props, State> {
+    public readonly state: State = {
         size: 10,
         current: 1
-    }
-
-    render() {
-        const { avatarUrl, nickName, auditStatus, id, total, current, records, loading } = this.state
+    };
+    public render() {
+        const { avatarUrl, nickName, id, total, current, records, loading } = this.state;
         const columns: ColumnProps<Record>[] = [
             {
                 title: 'ID',
@@ -56,9 +34,9 @@ class UserCashFlow extends PureComponent<Prop, State> {
                 title: '充值时间',
                 align: 'center',
                 dataIndex: 'rawAddTime',
-                render: (rawAddTime) => formatTime(rawAddTime)
+                render: (rawAddTime: string) => formatTime(rawAddTime)
             }
-        ]
+        ];
         return (
             <div className="admin-child-page">
                 <Breadcrumb className="breadcrumb">
@@ -87,7 +65,7 @@ class UserCashFlow extends PureComponent<Prop, State> {
                         </Card>
                     </div>
                     <div className="pager" style={{background:'#fff'}}>
-                        <div></div>
+                        <div/>
                         <Pagination 
                             onChange={(current) => {
                                 this.setState({ 
@@ -120,7 +98,7 @@ class UserCashFlow extends PureComponent<Prop, State> {
                         dataSource={records}>
                     </Table>
                     <div className="pager" style={{background:'#fff'}}>
-                        <div></div>
+                        <div/>
                         <Pagination 
                             onChange={(current) => {
                                 this.setState({ 
@@ -146,12 +124,23 @@ class UserCashFlow extends PureComponent<Prop, State> {
             </div>
         )
     }
-
-    getCashFlow() {
-        const { id, current, size } = this.state
+    public componentWillMount() {
+        if (this.props.match.params.id) {
+            this.setState({
+                id: Number(this.props.match.params.id),
+                ...Qs.parse(this.props.location.search.replace(/^\?/, ''))
+            }, () => {
+                this.getCashFlow()
+            })
+        } else {
+            this.props.history.goBack()
+        }
+    }
+    private getCashFlow() {
+        const { id, current, size } = this.state;
         this.setState({
             loading: true
-        })
+        });
         http.get('/cashflow/queryPageCashFlowVo', {
             params: {
                 userId: id,
@@ -178,24 +167,23 @@ class UserCashFlow extends PureComponent<Prop, State> {
             })
         })
     }
-
-    componentWillMount() {
-        if (this.props.match.params.id) {
-            this.setState({
-                id: Number(this.props.match.params.id),
-                ...Qs.parse(this.props.location.search.replace(/^\?/, ''))
-            }, () => {
-                this.getCashFlow()
-            })
-        } else {
-            this.props.history.goBack()
-        }
-    }
-
 }
 
 export default UserCashFlow
 
+interface OwnProps {}
+type Props = OwnProps & RouteComponentProps<{id: string}>;
+type State = Readonly<{
+    avatarUrl?: string;
+    nickName?: string;
+    auditStatus?: string | number;
+    id?: string | number;
+    current?: number;
+    total?: number;
+    size?: number;
+    records?: Record[];
+    loading?: boolean;
+}>
 interface ResponseCashFlow {
   success: boolean;
   code: string;
@@ -203,7 +191,6 @@ interface ResponseCashFlow {
   draw: number;
   data: Data;
 }
-
 interface Data {
   total: number;
   size: number;
@@ -213,7 +200,6 @@ interface Data {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
 }
-
 interface Record {
   id: number;
   deleted: boolean;

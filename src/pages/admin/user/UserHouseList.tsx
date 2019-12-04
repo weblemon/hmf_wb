@@ -1,47 +1,40 @@
-import React, { Component, CSSProperties } from 'react'
+import React, { Component } from 'react'
 
-import { Breadcrumb, Table, notification, Avatar, Switch, Button, DatePicker, Pagination, Row, Col, Modal, Input, Radio, Select, Cascader, Icon, Card } from 'antd';
-import { Link } from 'react-router-dom';
-import http, { BaseResponse } from '../../../utils/http';
+import { Breadcrumb, Table, notification, Avatar, Switch, Button, DatePicker, Pagination, Row, Col, Input, Select, Card } from 'antd';
+import {Link, RouteComponentProps} from 'react-router-dom';
+import http from '../../../utils/http';
 import { ColumnProps } from 'antd/lib/table';
 import { formatHouseType, formatHouseTime } from '../../../utils/format';
-import { Location, History } from 'history';
 import houseOrientation, { getHouseOrientationTypeId, getHouseOrientationTypeName } from '../../constants/houseOrientation';
 import houseDoorLookTypeRange, { getHouseDoorLookTypeId, getHouseDoorLookTypeName } from '../../constants/houseDoorLookTypeRange';
 import houseDecorationRange, { getHouseDecorationTypeId, getHouseDecorationTypeName } from '../../constants/houseDecorationRange';
 import {getHouseFloorTypeName } from '../../constants/houseFloor';
-import houseTypeEnum from '../../constants/houseTypeRange';
 import houseingTypeRange, { getHouseingTypeId } from '../../constants/houseingTypeRange';
 import Meta from 'antd/lib/card/Meta';
-import { match } from 'react-router';
 import Qs from 'qs'
 import { RangePickerValue } from 'antd/lib/date-picker/interface';
+import { HouseInfo, QueryHouseListParams, getHouseList } from '../../../utils/apis/getHouseList';
+import { tableConfig } from '../../constants/tableConfig';
 
-type Prop = {
-    location: Location;
-    history: History;
-    match: match<{id: string}>;
-}
-
+interface OwnProps {}
+type Props = OwnProps & RouteComponentProps<{id: string}>;
 type State = Readonly<{
     loading: boolean;
     total: number;
     size: number;
     pages: number;
     current: number;
-    records: Record[];
+    records: HouseInfo[];
     editLoading: number | null;
-    query: SearchQuery;
+    query: QueryHouseListParams;
     id: number | null;
     avatarUrl?: string;
     nickName?: string;
     auditStatus?: string | number;
     timeRange?: RangePickerValue;
 }>
-
-class UserHouseList extends Component<Prop, State> {
-
-    readonly state: State = {
+class UserHouseList extends Component<Props, State> {
+    public readonly state: State = {
         records: [],
         total: 0,
         size: 10,
@@ -52,8 +45,20 @@ class UserHouseList extends Component<Prop, State> {
         query: {},
         id: null
     }
-
-    render() {
+    public componentWillMount() {
+        if (this.props.match.params.id) {
+            this.setState({
+                id: Number(this.props.match.params.id),
+                ...Qs.parse(this.props.location.search.replace(/^\?/, ''))
+            }, () => {
+                this.getHouseList()
+            })
+        } else {
+            this.props.history.goBack()
+        }
+        this.getHouseList();
+    }
+    public render() {
         const { records, loading, query, id, auditStatus, avatarUrl, nickName } = this.state
         let name;
         if (auditStatus === '0') {
@@ -65,7 +70,16 @@ class UserHouseList extends Component<Prop, State> {
         } else if (auditStatus === '3') {
             name ='欠费下架'
         }
-        const columns: ColumnProps<Record>[] = [
+        const columns: ColumnProps<HouseInfo>[] = [
+            {
+                title: 'ID',
+                width: 150,
+                dataIndex: 'id',
+                fixed: 'left',
+                render: (id) => {
+                    return <Link to={`/admin/house/${id}.html`} target="_blank">{id}</Link>
+                }
+            },
             {
                 title: '标题',
                 align: 'center',
@@ -74,7 +88,7 @@ class UserHouseList extends Component<Prop, State> {
             },
             {
                 title: '户型',
-                width: 120,
+                width: 200,
                 align: 'center',
                 dataIndex: 'houseType',
                 render: (houseType: string) => formatHouseType(houseType)
@@ -86,17 +100,83 @@ class UserHouseList extends Component<Prop, State> {
                 dataIndex: 'price'
             },
             {
-                title: '地址',
+                title: '朝向',
+                width: 100,
                 align: 'center',
-                render: (record: Record) => {
+                render: (record: HouseInfo) => {
+                    return getHouseOrientationTypeName(record.houseOrientation)
+                }
+            },
+            {
+                title: '电梯',
+                width: 50,
+                align: 'center',
+                render: (record: HouseInfo) => {
+                    return record.houseElevator === 0 ? '有' : '无'
+                }
+            },
+            {
+                title: '楼层',
+                width: 120,
+                align: 'center',
+                render: (record: HouseInfo) => {
+                    return getHouseFloorTypeName(record.houseFloor)
+                }
+            },
+            {
+                title: '门锁',
+                width: 100,
+                align: 'center',
+                render: (record: HouseInfo) => {
+                    return getHouseDoorLookTypeName(record.houseDoorLookType)
+                }
+            },
+            {
+                title: '装修',
+                width: 200,
+                align: 'center',
+                render: (record: HouseInfo) => {
+                    return getHouseDecorationTypeName(record.houseDecoration)
+                }
+            },           
+            {
+                title: '地址',
+                align: 'left',
+                render: (record: HouseInfo) => {
                     return [record.province, record.city, record.area, record.detailedAddress]
                 }
             },
             {
-                title: '已上架',
-                width: 200,
+                title: '发布时间',
                 align: 'center',
-                render: (record: Record) => {
+                width: 200,
+                render: (record: HouseInfo) => {
+                    return formatHouseTime(record.rawAddTime)
+                }
+            },
+            {
+                title: '更新时间',
+                align: 'center',
+                width: 200,
+                render: (record: HouseInfo) => {
+                    return formatHouseTime(record.rawUpdateTime)
+                }
+            },
+            {
+                title: '发布人',
+                width: 100,
+                align: 'center',
+                fixed: 'right',
+                render: (record: HouseInfo) => {
+                    return <Link to={`/admin/user/${record.user.id}.html`}>{record.user.realName}</Link>
+                }
+            },
+            {
+                title: '已上架',
+                width: 100,
+                align: 'center',
+                fixed: 'right',
+                render: (record: HouseInfo) => {
                     return (
                         <Switch
                             loading={this.state.editLoading === record.id}
@@ -138,18 +218,18 @@ class UserHouseList extends Component<Prop, State> {
             },
             {
                 title: '操作',
-                width: 200,
+                fixed: 'right',
+                width: 100,
                 align: 'center',
-                render: (record: Record) => {
-                    return <Button onClick={() => { this.props.history.push(`/admin/house/${record.id}.html`) }} size="small" type="ghost">查看</Button>
+                render: (record: HouseInfo) => {
+                    return (
+                        <Link to={`/admin/house/${record.id}.html`} target='_blank'>
+                            <Button size="small" type="ghost">查看</Button>
+                        </Link>
+                    )
                 }
             }
         ]
-        const col = 6;
-        const rowStyle: CSSProperties = {
-            margin: '5px 0',
-            minWidth: 1000
-        }
         return (
             <div className="admin-child-page">
                 <Breadcrumb className="breadcrumb">
@@ -172,19 +252,47 @@ class UserHouseList extends Component<Prop, State> {
                     />
                 </Card>
                 <div className="content">
-                    <div className="top-bar">
-                        <Row style={rowStyle}>                        
-                            <Col span={col}>
+                <div className="top-bar">
+                        <Row
+                            style={tableConfig.rowStyle}
+                            gutter={tableConfig.gutter}
+                        >
+                            <Col {...tableConfig.span}>
+                                <Input
+                                    type="text"
+                                    placeholder="id"
+                                    allowClear
+                                    style={{ width: 240 }}
+                                    value={query.id}
+                                    onInput={(e) => {
+                                        this.changeSearchQuery({
+                                            id: (e.target as HTMLInputElement).value as any
+                                        })
+                                    }}
+                                    onChange={(e) => {
+                                        const v = (e.target as HTMLInputElement).value as any
+                                        if (v !== 0) {
+                                            this.changeSearchQuery({
+                                                id: v
+                                            })
+                                        } else {
+                                            delete this.state.query.id
+                                        }
+                                        
+                                    }}
+                                />
+                            </Col>                         
+                            <Col {...tableConfig.span}>
                                 <Input
                                     allowClear
                                     placeholder="搜索地区/小区名"
                                     style={{ width: 240 }}
-                                    value={query.search}
                                     onInput={(e) => {
                                         this.changeSearchQuery({
                                             search: (e.target as HTMLInputElement).value
                                         })
                                     }}
+                                    value={query.search}
                                     onChange={(e) => {
                                         this.changeSearchQuery({
                                             search: (e.target as HTMLInputElement).value
@@ -193,7 +301,7 @@ class UserHouseList extends Component<Prop, State> {
                                 />
 
                             </Col>                        
-                            <Col span={col}>
+                            <Col {...tableConfig.span}>
                                 <DatePicker.RangePicker
                                     style={{
                                         width: 240
@@ -218,7 +326,7 @@ class UserHouseList extends Component<Prop, State> {
                                     } 
                                 />
                             </Col>
-                            <Col span={col}>
+                            <Col {...tableConfig.span}>
                                 <Input.Group>
                                     <Input
                                         type="number"
@@ -246,10 +354,11 @@ class UserHouseList extends Component<Prop, State> {
                                         type="number"
                                         placeholder="结束面积"
                                         allowClear
-                                        value={query.endHouseArea}
                                         style={{ width: 100 }}
+                                        value={query.endHouseArea}
                                         onInput={(e) => {
                                             let v = Number((e.target as HTMLInputElement).value)
+                                            if (!v) return;
                                             if (v !== 0) {
                                                 this.changeSearchQuery({
                                                     endHouseArea: v
@@ -260,6 +369,7 @@ class UserHouseList extends Component<Prop, State> {
                                         }}
                                         onChange={(e) => {
                                             let v = Number((e.target as HTMLInputElement).value)
+                                            if (!v) return;
                                             if (v !== 0) {
                                                 this.changeSearchQuery({
                                                     endHouseArea: v
@@ -271,7 +381,8 @@ class UserHouseList extends Component<Prop, State> {
                                     />
                                 </Input.Group>
                             </Col>
-                            <Col span={col}>
+                            
+                            <Col {...tableConfig.span}>
                                 <Input.Group>
                                     <Input
                                         type="number"
@@ -320,15 +431,15 @@ class UserHouseList extends Component<Prop, State> {
                                     />
                                 </Input.Group>
                             </Col>
-                        </Row>
-
-                        <Row style={rowStyle}>
-                            <Col span={col}>
+                            {/* <Col {...tableConfig.span}>
                                 <Cascader
                                     value={query.houseType ? query.houseType.split(',') : undefined}
                                     onChange={(e) => {
                                         this.changeSearchQuery({
                                             houseType: e.join(",")
+                                        })
+                                        this.setState({
+                                            houseType: 0
                                         })
                                     }}
                                     style={{
@@ -356,19 +467,18 @@ class UserHouseList extends Component<Prop, State> {
                                     }
                                     placeholder='选择户型' 
                                 />
-                            </Col>
-                            <Col span={col}>
+                            </Col> */}
+                            <Col {...tableConfig.span}>
                                 <Select
                                      style={{
                                         width: 240
                                     }}
                                     value={typeof this.state.query.housingType === 'number' ? this.state.query.housingType : -1}
                                     defaultValue={-1}
-                                    onChange={(e) => {
-                                        console.log(e)
-                                        if (e >= 0) {
+                                    onChange={(housingType: number) => {
+                                        if (housingType >= 0) {
                                             this.changeSearchQuery({
-                                                housingType: e
+                                                housingType
                                             })
                                         } else {
                                             delete this.state.query.housingType
@@ -384,19 +494,19 @@ class UserHouseList extends Component<Prop, State> {
                                     }
                                 </Select>
                             </Col>
-                            <Col span={col}>
+                            <Col {...tableConfig.span}>
                                 <Select
                                      style={{
                                         width: 240
                                     }}
                                     value={typeof this.state.query.houseOrientation === 'number' ? this.state.query.houseOrientation : -1}
                                     defaultValue={-1}
-                                    onChange={(e) => {
-                                        if (e >= 0) {
+                                    onChange={(houseOrientation: number) => {
+                                        if (houseOrientation >= 0) {
                                             this.setState({
                                                 query: {
                                                     ...this.state.query,
-                                                    houseOrientation: e
+                                                    houseOrientation
                                                 }
                                             })
                                         } else {
@@ -413,17 +523,18 @@ class UserHouseList extends Component<Prop, State> {
                                     }
                                 </Select>
                             </Col>  
-                            <Col span={col}>
+                        
+                            <Col {...tableConfig.span}>
                                 <Select
                                     value={typeof this.state.query.houseDoorLookType === 'number' ?  this.state.query.houseDoorLookType : -1}
                                      style={{
                                         width: 240
                                     }}
                                     defaultValue={-1}
-                                    onChange={(e) => {
-                                        if (e >= 0) {
+                                    onChange={(houseDoorLookType: number) => {
+                                        if (houseDoorLookType >= 0) {
                                             this.changeSearchQuery({
-                                                houseDoorLookType: e
+                                                houseDoorLookType
                                             })
                                         } else {
                                             delete this.state.query.houseDoorLookType
@@ -439,20 +550,17 @@ class UserHouseList extends Component<Prop, State> {
                                     }
                                 </Select>
                             </Col>
-                        </Row>
-
-                        <Row style={rowStyle}>
-                            <Col span={col}>
+                            <Col {...tableConfig.span}>
                                 <Select
                                      style={{
                                         width: 240
                                     }}
                                     defaultValue={-1}
                                     value={typeof this.state.query.houseDecoration === 'number' ? this.state.query.houseDecoration : -1}
-                                    onChange={(e) => {
-                                        if (e >= 0) {
+                                    onChange={(houseDecoration: number) => {
+                                        if (houseDecoration >= 0) {
                                             this.changeSearchQuery({
-                                                houseDecoration: e
+                                                houseDecoration
                                             })
                                         } else {
                                             delete this.state.query.houseDecoration
@@ -468,9 +576,56 @@ class UserHouseList extends Component<Prop, State> {
                                     }
                                 </Select>
                             </Col>
+                            {/* <Col {...tableConfig.span}>
+                                <Select
+                                     style={{
+                                        width: 240
+                                    }}
+                                    value={typeof this.state.query.auditStatus  === 'number' ? this.state.query.auditStatus : -1}
+                                    defaultValue={-1}
+                                    onChange={(e) => {
+                                        if (e >= 0) {
+                                            this.changeSearchQuery({
+                                                auditStatus: e
+                                            })
+                                        } else {
+                                            delete this.state.query.auditStatus
+                                            this.changeSearchQuery({})
+                                        }
+                                    }}
+                                >
+                                    <Select.Option value={-1}>发布状态不限</Select.Option>
+                                    {
+                                        houseStatus.map((item, index) => {
+                                            return <Select.Option key={index} value={getHouseStatusTypeId(item)}>{item}</Select.Option>
+                                        })
+                                    }
+                                </Select>
+                            </Col> */}
+                            {/* <Col {...tableConfig.span}>
+                                <Select
+                                     style={{
+                                        width: 240
+                                    }}
+                                    value={this.state.houseType}
+                                    onChange={(e) => {
+                                        this.setState({
+                                            houseType: e
+                                        })
+                                        this.changeSearchQuery({
+                                            houseType: ""
+                                        })
+                                    }}
+                                >
+                                    {
+                                        ['户型(模糊查询)不限', '一居室', '二居室', '三居室', '四居室', '五居室', '五居以上'].map((item, index) => {
+                                            return <Select.Option key={index} value={index}>{item}</Select.Option>
+                                        })
+                                    }
+                                </Select>
+                            </Col> */}
                         </Row>
-                    </div>
-                    <div className="pager">
+                    </div><div className="pager">
                         <div>
                              <Button
                                 onClick={() => {
@@ -532,51 +687,7 @@ class UserHouseList extends Component<Prop, State> {
                         dataSource={records} 
                         pagination={false}
                         loading={loading}
-                        expandedRowRender={(record: Record) => {
-                            return (
-                                <Row gutter={16}>
-                                    <Col span={6} >
-                                        发布时间: {formatHouseTime(record.rawAddTime)}
-                                    </Col>
-
-                                    <Col span={6} >
-                                        更新时间: {formatHouseTime(record.rawUpdateTime)}
-                                    </Col>
-
-                                    <Col span={6} >
-                                        朝向: {getHouseOrientationTypeName(record.houseOrientation)}
-                                    </Col>
-
-                                    <Col span={6} >
-                                        电梯: {record.houseElevator === 0 ? '有' : '无'}
-                                    </Col>
-
-                                    <Col span={6} >
-                                        电梯: {getHouseFloorTypeName(record.houseFloor)}
-                                    </Col>
-
-                                    <Col span={6}>
-                                        门锁: {getHouseDoorLookTypeName(record.houseDoorLookType)}
-                                    </Col>
-
-                                    <Col span={6}>
-                                        装修: {getHouseDecorationTypeName(record.houseDecoration)}
-                                    </Col>
-
-                                    <Col span={6}>
-                                        发布人: <Link to={`/admin/user/${record.user.id}.html`}>{record.user.realName}</Link>
-                                    </Col>
-
-                                    <Col span={6}>
-                                        发布人ID:  <Link to={`/admin/user/${record.user.id}.html`}>{record.user.id}</Link>
-                                    </Col>
-
-                                    <Col span={6}>
-                                        发布人手机: {record.user.phone}
-                                    </Col>
-                                </Row>
-                            )
-                        }}
+                        scroll={{x: 2400, y: 300}}
                     />
                     <div className="pager">
                         <div></div>
@@ -605,8 +716,7 @@ class UserHouseList extends Component<Prop, State> {
             </div>
         )
     }
-
-    changeSearchQuery(query: SearchQuery) {
+    private changeSearchQuery(query: QueryHouseListParams) {
         this.setState({
             query: {
                 ...this.state.query,
@@ -614,22 +724,19 @@ class UserHouseList extends Component<Prop, State> {
             }
         })
     }
-
-    public getHouseList() {
+    private getHouseList() {
         const { current, loading, size, query, id, avatarUrl, auditStatus } = this.state
         if (loading || !id) return;
         this.setState({loading: true})
-        http.get('/housingResources/queryPageHouses', {
-            params: { 
-                releaseId: id,
-                current,
-                size,
-                auditStatus,
-                order: "desc",
-                ...query
-            }
+        getHouseList({ 
+            releaseId: id,
+            current,
+            size,
+            auditStatus,
+            order: "desc",
+            ...query
         }).then(res => {
-            const { success, data, message } = res.data as BaseResponse<ResponseHouseList>
+            const { success, data, message } = res.data;
             if (success) {
                 const { total, size, pages, current, records } = data
                 this.setState({
@@ -651,118 +758,5 @@ class UserHouseList extends Component<Prop, State> {
             }
         })
     }
-
-    public componentWillMount() {
-        if (this.props.match.params.id) {
-            this.setState({
-                id: Number(this.props.match.params.id),
-                ...Qs.parse(this.props.location.search.replace(/^\?/, ''))
-            }, () => {
-                this.getHouseList()
-            })
-        } else {
-            this.props.history.goBack()
-        }
-        this.getHouseList();
-    }
-
 }
-
-export default UserHouseList
-
-export interface ResponseHouseList {
-  total: number;
-  size: number;
-  pages: number;
-  current: number;
-  records: Record[];
-}
-
-export interface QueryPageHouse {
-    releaseId?: number;
-    size?: number;
-    search?: string;
-    current?: number;
-    auditStatus?: 0 | 1 | 2 | 3;
-    startAddTime?: Date | string;
-    endAddTime?: Date | string;
-    name?: string;
-    address?: string;
-    price?: string;
-    houseElevator?: 0 | 1;
-    houseFloor?: string;
-    houseOrientation?: number;
-    houseType?: string;
-    houseArea?: number;
-    houseAreaPlus?: number;
-    houseTitle?: number;
-    houseDecoration?: number;
-    houseDoorLookType?: number;
-    order?: "desc" | "asc";
-}
-
-export interface Record {
-  id: number;
-  deleted: boolean;
-  rawAddTime: string;
-  rawUpdateTime?: any;
-  houseTitle: string;
-  houseArea: number;
-  houseAreaPlus?: any;
-  houseType: string;
-  houseOrientation: number;
-  price: number;
-  houseDoorLookType: number;
-  houseDecoration: number;
-  houseElevator: number;
-  houseFloor: string;
-  auditStatus: string | number;
-  housePhotos: string;
-  houseRemarks: string;
-  province?: any;
-  city?: any;
-  area?: any;
-  detailedAddress?: any;
-  houseLocation: HouseLocation;
-  user: User;
-  isCollect?: any;
-  releaseId: number;
-}
-
-export interface User {
-  id: number;
-  nickName: string;
-  realName: string;
-  phone: string;
-  sparePhone: string;
-  avatarUrl: string;
-  gender: number;
-}
-
-interface HouseLocation {
-  id: number;
-  deleted: boolean;
-  rawAddTime?: any;
-  rawUpdateTime?: any;
-  houssId?: any;
-  name: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-}
-
-type RecordCopy = { [K in keyof Record]?: Record[K]}
-
-interface SearchQuery extends RecordCopy{
-    phone?: string | number;
-    startHouseArea?: string | number;
-    endHouseArea?: string | number;
-    startPrice?: string | number;
-    endPrice?: string | number;
-    //0 模糊查询室 1 模糊查询厅
-    hType?: string | number;
-    search?: string;
-    housingType?: string | number;
-    startAddTime?: string |  number;
-    endAddTime?: string | number;
-}
+export default UserHouseList;
